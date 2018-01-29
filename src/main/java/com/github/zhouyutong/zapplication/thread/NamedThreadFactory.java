@@ -11,16 +11,21 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Date 2017/7/4
  */
 public class NamedThreadFactory implements ThreadFactory {
+    public static final String COMMON_PREFIX = "namedPool-";
     private static final AtomicInteger threadPoolNumber = new AtomicInteger(1);
     private final ThreadGroup group;
     private final AtomicInteger threadNumber = new AtomicInteger(1);
     private static final String NAME_PATTERN = "%s-%d-thread";
     private final String threadNamePrefix;
 
-    public NamedThreadFactory(String threadNamePrefix) {
+    private NamedThreadFactory(String threadNamePrefix) {
         SecurityManager s = System.getSecurityManager();
         this.group = s != null ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
         this.threadNamePrefix = String.format(Locale.ROOT, NAME_PATTERN, new Object[]{checkPrefix(threadNamePrefix), Integer.valueOf(threadPoolNumber.getAndIncrement())});
+    }
+
+    public static NamedThreadFactory newNamedThreadFactory(String threadNamePrefix){
+        return new NamedThreadFactory(COMMON_PREFIX + threadNamePrefix);
     }
 
     private static String checkPrefix(String prefix) {
