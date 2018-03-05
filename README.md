@@ -4,7 +4,7 @@
 # Use
 ```xml
 <dependency>
-    <groupId>com.github.zhouyutong</groupId>
+    <groupId>com.zhouyutong</groupId>
     <artifactId>z-application</artifactId>
     <version>1.0-SNAPSHOT</version>
 </dependency>
