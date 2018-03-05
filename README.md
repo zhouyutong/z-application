@@ -12,11 +12,11 @@
 <repositories>
     <repository>
         <id>zhouyutong-mvn-repo-snapshot</id>
-        <url>https://raw.github.com/zhouyutong/maven-repo/snapshot/</url>
+        <url>https://raw.githubusercontent.com/zhouyutong/maven-repo/snapshot/</url>
     </repository>
     <repository>
         <id>zhouyutong-mvn-repo-release</id>
-        <url>https://raw.github.com/zhouyutong/maven-repo/release/</url>
+        <url>https://raw.githubusercontent.com/zhouyutong/maven-repo/release/</url>
     </repository>
 </repositories>
 ```
