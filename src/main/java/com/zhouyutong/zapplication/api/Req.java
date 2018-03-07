@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * 远程调用的请求参数
  * 定义了
- * 系统级参数如appKey等
+ * 系统级参数如appKey是每个接口都会传的
  * 应用级参数
  * <p/>
  * Created by zhoutao on 2016/6/2.
