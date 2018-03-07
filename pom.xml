@@ -6,7 +6,7 @@
 
     <groupId>com.zhouyutong</groupId>
     <artifactId>z-application</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <name>z-application</name>
     <description>application framework.</description>
@@ -88,4 +88,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>release</id>
+            <name>Nexus Release Repository</name>
+            <url>http://115.29.11.157:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshot</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>http://115.29.11.157:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

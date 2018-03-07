@@ -13,16 +13,16 @@ import java.io.Serializable;
  */
 public class ErrorCode implements Serializable {
 
-    public static final ErrorCode PARAM_REQUIRED = new ErrorCode("40001", "必填参数【%s】为空");
-    public static final ErrorCode PARAM_INVALID = new ErrorCode("40006", "参数格式无效【%s】");
-    public static final ErrorCode SIGN = new ErrorCode("40002", "签名验证失败");
-    public static final ErrorCode AUTHORITY = new ErrorCode("40003", "无权限做此操作");
-    public static final ErrorCode DECRYPT = new ErrorCode("40004", "解密失败");
-    public static final ErrorCode INVALID_CALLER = new ErrorCode("40005", "非法调用方");
-    public static final ErrorCode UPLOAD_TYPE = new ErrorCode("40007", "文件类型只允许上传【%s】");
-    public static final ErrorCode UPLOAD_SIZE = new ErrorCode("40008", "文件大小不可超过【%s】M");
+    public static final ErrorCode PARAM_REQUIRED = new ErrorCode("4001", "必填参数【%s】为空");
+    public static final ErrorCode PARAM_INVALID = new ErrorCode("4006", "参数格式无效【%s】");
+    public static final ErrorCode SIGN = new ErrorCode("4002", "签名验证失败");
+    public static final ErrorCode AUTHORITY = new ErrorCode("4003", "无权限做此操作");
+    public static final ErrorCode DECRYPT = new ErrorCode("4004", "解密失败");
+    public static final ErrorCode INVALID_CALLER = new ErrorCode("4005", "非法调用方");
+    public static final ErrorCode UPLOAD_TYPE = new ErrorCode("4007", "文件类型只允许上传【%s】");
+    public static final ErrorCode UPLOAD_SIZE = new ErrorCode("4008", "文件大小不可超过【%s】M");
 
-    public static final ErrorCode SERVER = new ErrorCode("50000", "服务器异常【%s】");
+    public static final ErrorCode SERVER = new ErrorCode("5000", "服务器异常【%s】");
 
     @Getter
     private String code;
