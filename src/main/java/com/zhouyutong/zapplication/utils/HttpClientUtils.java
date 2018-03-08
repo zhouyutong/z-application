@@ -82,6 +82,31 @@ public class HttpClientUtils {
      * http客户端
      */
     private CloseableHttpClient closeableHttpClient;
+
+    public PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager() {
+        return poolingHttpClientConnectionManager;
+    }
+
+    public CloseableHttpClient getCloseableHttpClient() {
+        return closeableHttpClient;
+    }
+
+    public RequestConfig getDefaultRequestConfig() {
+        return defaultRequestConfig;
+    }
+
+    public ConnectionConfig getDefaultConnectionConfig() {
+        return defaultConnectionConfig;
+    }
+
+    public SocketConfig getDefaultSocketConfig() {
+        return defaultSocketConfig;
+    }
+
+    public static IdleConnectionMonitorThread getIdleThread() {
+        return idleThread;
+    }
+
     /**
      * 默认客户端级别的设置
      */
