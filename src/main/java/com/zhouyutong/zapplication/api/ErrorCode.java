@@ -6,10 +6,12 @@ import java.io.Serializable;
 
 /**
  * 错误码
- * 4000开头的是公共错误码
+ * 400开头的是公共错误码
  * 其他如4100、4200等开头各模块自行定义
  * 只需要继承ErrorCode就可以
+ *
  * Created by cheshun on 16/9/2.
+ *
  */
 public class ErrorCode implements Serializable {
 
@@ -21,8 +23,14 @@ public class ErrorCode implements Serializable {
     public static final ErrorCode INVALID_CALLER = new ErrorCode("4005", "非法调用方");
     public static final ErrorCode UPLOAD_TYPE = new ErrorCode("4007", "文件类型只允许上传【%s】");
     public static final ErrorCode UPLOAD_SIZE = new ErrorCode("4008", "文件大小不可超过【%s】M");
-
+    /**
+     * 5000通用服务器异常
+     * 5001访问redis异常
+     * 5002访问db异常
+     */
     public static final ErrorCode SERVER = new ErrorCode("5000", "服务器异常【%s】");
+    public static final ErrorCode SERVER_REDIS = new ErrorCode("5001", "服务器异常【%s】");
+    public static final ErrorCode SERVER_DAO = new ErrorCode("5002", "服务器异常【%s】");
 
     @Getter
     private String code;
