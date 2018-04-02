@@ -6,7 +6,7 @@
 
     <groupId>com.zhouyutong</groupId>
     <artifactId>z-application</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
 
     <name>z-application</name>
     <description>application framework.</description>
@@ -61,6 +61,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.3</version>
+        </dependency>
+        <!-- Swagger2 -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.7.0</version>
         </dependency>
     </dependencies>
 
