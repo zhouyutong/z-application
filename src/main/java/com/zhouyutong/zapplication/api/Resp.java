@@ -50,6 +50,10 @@ public class Resp<T> implements Serializable {
         return new Resp(errorCode.getCode(), String.format(errorCode.getMessage(), message), null);
     }
 
+    public static Resp error(String code, String message) {
+        return new Resp(code, message, null);
+    }
+
     public boolean hasSuccess() {
         return CODE_SUCCESS.equals(this.code);
     }
