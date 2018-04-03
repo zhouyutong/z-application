@@ -248,7 +248,8 @@ public class HttpClientUtils {
          * 消费者日志
          */
         long start = System.currentTimeMillis();
-        StringBuilder sb = new StringBuilder("consumer_log - ");
+        StringBuilder sb = new StringBuilder();
+        sb.append("httpCall").append(SymbolConstant.BAR);
         sb.append(urlToSend).append(SymbolConstant.BAR);
         if (queryParams != null) {
             sb.append(queryParams.toString()).append(SymbolConstant.BAR);
@@ -361,6 +362,7 @@ public class HttpClientUtils {
          */
         long start = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
+        sb.append("httpCall").append(SymbolConstant.BAR);
         sb.append(urlToSend).append(SymbolConstant.BAR);
         // 参数打印控制1000字符以内
         sb.append(postParams.toString()).append(SymbolConstant.BAR);
@@ -467,6 +469,7 @@ public class HttpClientUtils {
          */
         long start = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
+        sb.append("httpCall").append(SymbolConstant.BAR);
         sb.append(urlToSend).append(SymbolConstant.BAR);
         // 参数打印控制1000字符以内
         sb.append(jsonParams).append(SymbolConstant.BAR);
