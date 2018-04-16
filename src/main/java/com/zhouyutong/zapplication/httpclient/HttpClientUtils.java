@@ -1,11 +1,11 @@
-package com.zhouyutong.zapplication.utils;
+package com.zhouyutong.zapplication.httpclient;
 
-import com.zhouyutong.zapplication.constant.SymbolConstant;
-import com.zhouyutong.zapplication.utils.exception.HttpClientException;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.zhouyutong.zapplication.constant.SymbolConstant;
+import com.zhouyutong.zapplication.exception.HttpCallException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -36,6 +36,7 @@ import org.apache.http.protocol.HttpCoreContext;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -170,8 +171,6 @@ public class HttpClientUtils {
                 .setDefaultRequestConfig(defaultRequestConfig)
                 .setConnectionManager(poolingHttpClientConnectionManager)
                 .build();
-
-
         /**
          * 定期回收连接池中失效链接线程
          */
@@ -183,7 +182,7 @@ public class HttpClientUtils {
         try {
             closeableHttpClient.close();
         } catch (IOException e) {
-            throw new HttpClientException("HttpClientUtils.shutdown error", e);
+            throw new RuntimeException("HttpClientUtils.shutdown error", e);
         }
     }
 
@@ -193,10 +192,10 @@ public class HttpClientUtils {
      * @param url - 请求URL
      * @return string
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public String httpGet(String url) {
-        return httpGet(url, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+    public String httpCallGet(String url) {
+        return httpCallGet(url, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
     /**
@@ -206,10 +205,10 @@ public class HttpClientUtils {
      * @param queryParams - 查询参数,如果要保证参数顺序请使用LinkedHashMap
      * @return string
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public String httpGet(String url, Map<String, String> queryParams) {
-        return httpGet(url, queryParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+    public String httpCallGet(String url, Map<String, String> queryParams) {
+        return httpCallGet(url, queryParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
     /**
@@ -220,10 +219,10 @@ public class HttpClientUtils {
      * @param requestTimeout - 请求超时时间,毫秒数
      * @return string
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public String httpGet(String url, Map<String, String> queryParams, int requestTimeout) {
-        return httpGet(url, queryParams, requestTimeout, DEFAULT_ENCODING);
+    public String httpCallGet(String url, Map<String, String> queryParams, int requestTimeout) {
+        return httpCallGet(url, queryParams, requestTimeout, DEFAULT_ENCODING);
     }
 
     /**
@@ -235,25 +234,14 @@ public class HttpClientUtils {
      * @param encoding       字符编码
      * @return string
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public final String httpGet(String url, Map<String, String> queryParams, int requestTimeout, String encoding) {
+    public String httpCallGet(String url, Map<String, String> queryParams, int requestTimeout, String encoding) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "Param url must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
 
         String urlToSend = url;
-        String result = null;
-
-        /**
-         * 消费者日志
-         */
-        long start = System.currentTimeMillis();
-        StringBuilder sb = new StringBuilder();
-        sb.append("httpCall").append(SymbolConstant.BAR);
-        sb.append(urlToSend).append(SymbolConstant.BAR);
-        if (queryParams != null) {
-            sb.append(queryParams.toString()).append(SymbolConstant.BAR);
-        }
+        String result;
         /**
          * 创建查询参数,如果设置了queryParams
          */
@@ -270,43 +258,27 @@ public class HttpClientUtils {
             }
         }
 
+        HttpGet httpGet = new HttpGet(urlToSend);
+        if (requestTimeout > 0) {
+            /**
+             * 设置超时，覆盖httpClient默认参数
+             */
+            RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
+                    .setSocketTimeout(requestTimeout)
+                    .build();
+            httpGet.setConfig(requestConfig);
+        }
         try {
-            /**
-             * 创建HttpGet实例
-             */
-            HttpGet httpGet = new HttpGet(urlToSend);
-
-            if (requestTimeout > 0) {
-                /**
-                 * 设置超时，覆盖httpClient默认参数
-                 */
-                RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
-                        .setSocketTimeout(requestTimeout)
-                        .build();
-                httpGet.setConfig(requestConfig);
+            if (log.isDebugEnabled()) {
+                log.debug("=========httpCallGet request, url:{}, param:{}", url, queryParams == null ? "" : queryParams.toString());
             }
-
-            /**
-             * 发送请求
-             */
             HttpResponse httpResponse = closeableHttpClient.execute(httpGet);
-            /**
-             * 获取响应
-             */
-//            if (HttpStatus.SC_OK == httpResponse.getStatusLine().getStatusCode()) {
-            // EntityUtils.toString自动关闭输入流
             result = EntityUtils.toString(httpResponse.getEntity(), encoding);
-//            } else {
-//                EntityUtils.consume(httpResponse.getEntity());
-//            }
-        } catch (Exception ex) {
-            sb.append("Exception:").append(ex.getMessage()).append(SymbolConstant.BAR);
-            throw new HttpClientException("HttpClientUtils.httpGet error.", ex);
-        } finally {
-            // 结果打印控制1000字符以内
-            sb.append(result).append(SymbolConstant.BAR);
-            sb.append(System.currentTimeMillis() - start);
-            log.info(sb.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("=========httpCallGet response, {}", result);
+            }
+        } catch (IOException ex) {
+            throw new HttpCallException(ex.getMessage(), ex);
         }
         return result;
     }
@@ -318,10 +290,10 @@ public class HttpClientUtils {
      * @param postParams - 查询参数,如果要保证参数顺序请使用LinkedHashMap
      * @return
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public final String httpPostForm(String url, Map<String, String> postParams) {
-        return httpPostForm(url, postParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+    public String httpCallPostForm(String url, Map<String, String> postParams) {
+        return httpCallPostForm(url, postParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
     /**
@@ -332,10 +304,10 @@ public class HttpClientUtils {
      * @param requestTimeout - 请求超时时间,毫秒数
      * @return
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public final String httpPostForm(String url, Map<String, String> postParams, int requestTimeout) {
-        return httpPostForm(url, postParams, requestTimeout, DEFAULT_ENCODING);
+    public String httpCallPostForm(String url, Map<String, String> postParams, int requestTimeout) {
+        return httpCallPostForm(url, postParams, requestTimeout, DEFAULT_ENCODING);
     }
 
     /**
@@ -347,73 +319,48 @@ public class HttpClientUtils {
      * @param encoding
      * @return
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public final String httpPostForm(String url, Map<String, String> postParams, int requestTimeout, String encoding) {
+    public String httpCallPostForm(String url, Map<String, String> postParams, int requestTimeout, String encoding) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "Param url must be not null and empty");
         Preconditions.checkArgument(postParams != null && !postParams.isEmpty(), "Param postParams must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
 
         String urlToSend = url;
-        String result = null;
-
-        /**
-         * 消费者日志
-         */
-        long start = System.currentTimeMillis();
-        StringBuilder sb = new StringBuilder();
-        sb.append("httpCall").append(SymbolConstant.BAR);
-        sb.append(urlToSend).append(SymbolConstant.BAR);
-        // 参数打印控制1000字符以内
-        sb.append(postParams.toString()).append(SymbolConstant.BAR);
+        String result;
+        HttpPost httpPost = new HttpPost(urlToSend);
+        List<NameValuePair> qparams = Lists.newArrayList();
+        for (Entry<String, String> entry : postParams.entrySet()) {
+            qparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+        UrlEncodedFormEntity entity;
+        try {
+            entity = new UrlEncodedFormEntity(qparams, encoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Unsupported Encoding:" + encoding);
+        }
+        httpPost.setEntity(entity);
+        if (requestTimeout > 0) {
+            /**
+             * 设置超时，覆盖httpClient默认参数
+             */
+            RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
+                    .setSocketTimeout(requestTimeout)
+                    .build();
+            httpPost.setConfig(requestConfig);
+        }
 
         try {
-            /**
-             * 创建HttpPost实例
-             */
-            HttpPost httpPost = new HttpPost(urlToSend);
-            /**
-             * 创建请求参数
-             */
-            List<NameValuePair> qparams = Lists.newArrayList();
-            for (Entry<String, String> entry : postParams.entrySet()) {
-                qparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+            if (log.isDebugEnabled()) {
+                log.debug("=========httpCallPostForm request, url:{}, param:{}", url, postParams.toString());
             }
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(qparams, encoding);
-
-            httpPost.setEntity(entity);
-
-            if (requestTimeout > 0) {
-                /**
-                 * 设置超时，覆盖httpClient默认参数
-                 */
-                RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
-                        .setSocketTimeout(requestTimeout)
-                        .build();
-                httpPost.setConfig(requestConfig);
-            }
-
-            /**
-             * 发送请求
-             */
             HttpResponse httpResponse = closeableHttpClient.execute(httpPost);
-            /**
-             * 获取响应
-             */
-//            if (HttpStatus.SC_OK == httpResponse.getStatusLine().getStatusCode()) {
-            // EntityUtils.toString自动关闭输入流
             result = EntityUtils.toString(httpResponse.getEntity(), encoding);
-//            } else {
-//                EntityUtils.consume(httpResponse.getEntity());
-//            }
-        } catch (Exception ex) {
-            sb.append("Exception:").append(ex.getMessage()).append(SymbolConstant.BAR);
-            throw new HttpClientException("HttpClientUtils.httpPostForm error.", ex);
-        } finally {
-            // 结果打印控制1000字符以内
-            sb.append(result).append(SymbolConstant.BAR);
-            sb.append(System.currentTimeMillis() - start);
-            log.info(sb.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("=========httpCallPostForm response, {}", result);
+            }
+        } catch (IOException ex) {
+            throw new HttpCallException(ex.getMessage(), ex);
         }
         return result;
     }
@@ -425,10 +372,10 @@ public class HttpClientUtils {
      * @param jsonParams - json参数
      * @return
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public final String httpPostJson(String url, String jsonParams) {
-        return httpPostJson(url, jsonParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+    public String httpCallPostJson(String url, String jsonParams) {
+        return httpCallPostJson(url, jsonParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
     /**
@@ -439,10 +386,10 @@ public class HttpClientUtils {
      * @param requestTimeout - 请求超时时间,毫秒数
      * @return
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public final String httpPostJson(String url, String jsonParams, int requestTimeout) {
-        return httpPostJson(url, jsonParams, requestTimeout, DEFAULT_ENCODING);
+    public String httpCallPostJson(String url, String jsonParams, int requestTimeout) {
+        return httpCallPostJson(url, jsonParams, requestTimeout, DEFAULT_ENCODING);
     }
 
     /**
@@ -454,70 +401,42 @@ public class HttpClientUtils {
      * @param encoding
      * @return
      * @throws IllegalArgumentException
-     * @throws HttpClientException
+     * @throws HttpCallException
      */
-    public final String httpPostJson(String url, String jsonParams, int requestTimeout, String encoding) {
+    public String httpCallPostJson(String url, String jsonParams, int requestTimeout, String encoding) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "Param url must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jsonParams), "Param jsonParams must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
 
         String urlToSend = url;
-        String result = null;
+        String result;
+        HttpPost httpPost = new HttpPost(urlToSend);
+        StringEntity entity = new StringEntity(jsonParams, encoding);
+        // entity.setContentType("application/json;charset=" + encoding);
+        entity.setContentType("application/json");
+        httpPost.setEntity(entity);
 
-        /**
-         * 消费者日志
-         */
-        long start = System.currentTimeMillis();
-        StringBuilder sb = new StringBuilder();
-        sb.append("httpCall").append(SymbolConstant.BAR);
-        sb.append(urlToSend).append(SymbolConstant.BAR);
-        // 参数打印控制1000字符以内
-        sb.append(jsonParams).append(SymbolConstant.BAR);
+        if (requestTimeout > 0) {
+            /**
+             * 设置超时，覆盖httpClient默认参数
+             */
+            RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
+                    .setSocketTimeout(requestTimeout)
+                    .build();
+            httpPost.setConfig(requestConfig);
+        }
 
         try {
-            /**
-             * 创建HttpPost实例
-             */
-            HttpPost httpPost = new HttpPost(urlToSend);
-            /**
-             * 创建请求参数
-             */
-            StringEntity entity = new StringEntity(jsonParams, encoding);
-            // entity.setContentType("application/json;charset=" + encoding);
-            entity.setContentType("application/json");
-            httpPost.setEntity(entity);
-
-            if (requestTimeout > 0) {
-                /**
-                 * 设置超时，覆盖httpClient默认参数
-                 */
-                RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
-                        .setSocketTimeout(requestTimeout)
-                        .build();
-                httpPost.setConfig(requestConfig);
+            if (log.isDebugEnabled()) {
+                log.debug("=========httpCallPostJson request, url:{}, param:{}", url, jsonParams);
             }
-
-            /**
-             * 发送请求
-             */
             HttpResponse httpResponse = closeableHttpClient.execute(httpPost);
-            /**
-             * 获取响应
-             */
-//            if (HttpStatus.SC_OK == httpResponse.getStatusLine().getStatusCode()) {
-            // EntityUtils.toString自动关闭输入流
             result = EntityUtils.toString(httpResponse.getEntity(), encoding);
-//            } else {
-//                EntityUtils.consume(httpResponse.getEntity());
-//            }
-        } catch (Exception ex) {
-            sb.append("Exception:" + ex.getMessage()).append(SymbolConstant.BAR);
-            throw new HttpClientException("HttpClientUtils.httpPostJson error.", ex);
-        } finally {
-            // 返回结果打印控制1000字符以内
-            sb.append(result).append(SymbolConstant.BAR);
-            sb.append(System.currentTimeMillis() - start);
-            log.info(sb.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("=========httpCallPostForm response, {}", result);
+            }
+        } catch (IOException ex) {
+            throw new HttpCallException(ex.getMessage(), ex);
         }
         return result;
     }
@@ -646,12 +565,12 @@ public class HttpClientUtils {
 
     /**
      * 定期回收连接池中失效链接线程<br>
-     * <p/>
+     * <p>
      * 虽然连接池有了，但是由于http连接的特殊性（只有在通讯正在进行（block）时才能够对IO事件做出反应）<br>
      * 一旦连接被放回连接池后，我们无从知道该连接是否还是keepalive的，<br>
      * 且此时也无法监控当前socket的状态（即服务器主动关闭了连接，但客户端没有通讯时是不知道当前连接的状态是怎样的）。<br>
      * 怎么办呢？httpClient采用了一个折中的方案来检查连接的“状态”， 就是由客户端自己通过配置去主动关闭其认为是失效的连接。<br>
-     * <p/>
+     * <p>
      */
     private static class IdleConnectionMonitorThread extends Thread {
         private final Set<HttpClientConnectionManager> connMgrSet = Sets.newHashSet();

@@ -2,8 +2,8 @@ package com.zhouyutong.zapplication.sms;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.zhouyutong.zapplication.httpclient.HttpClientUtils;
 import com.zhouyutong.zapplication.serialization.json.FastJson;
-import com.zhouyutong.zapplication.utils.HttpClientUtils;
 import com.zhouyutong.zapplication.utils.StringUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +77,7 @@ public class SmsClient {
             String url = this.sendUrl + "?sign=" + sign;
 //            String url = this.sendUrl;
 
-            String respJson = httpClientUtils.httpPostForm(url, postParams);
+            String respJson = httpClientUtils.httpCallPostForm(url, postParams);
             Map respMap = FastJson.jsonStr2Object(respJson, Map.class);
             /**
              * 由于我们只支持单个手机发送，所以返回的success_list和fail_list忽略
