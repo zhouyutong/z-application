@@ -47,17 +47,17 @@ public class Resp<T> implements Serializable {
         //远程访问异常
         if (e instanceof RemoteCallException) {
             if (e instanceof MysqlCallException) {
-                return new Resp(ErrorCode.SERVER_MYSQL.getCode(), String.format(ErrorCode.SERVER_MYSQL.getMessage()), null);
+                return new Resp(ErrorCode.SERVER_MYSQL.getCode(), String.format(ErrorCode.SERVER_MYSQL.getMessage(), e.getMessage()), null);
             } else if (e instanceof RedisCallException) {
-                return new Resp(ErrorCode.SERVER_REDIS.getCode(), String.format(ErrorCode.SERVER_REDIS.getMessage()), null);
+                return new Resp(ErrorCode.SERVER_REDIS.getCode(), String.format(ErrorCode.SERVER_REDIS.getMessage(), e.getMessage()), null);
             } else if (e instanceof ElasticsearchCallException) {
-                return new Resp(ErrorCode.SERVER_ES.getCode(), String.format(ErrorCode.SERVER_ES.getMessage()), null);
+                return new Resp(ErrorCode.SERVER_ES.getCode(), String.format(ErrorCode.SERVER_ES.getMessage(), e.getMessage()), null);
             } else if (e instanceof HttpCallException) {
-                return new Resp(ErrorCode.SERVER_HTTP.getCode(), String.format(ErrorCode.SERVER_HTTP.getMessage()), null);
+                return new Resp(ErrorCode.SERVER_HTTP.getCode(), String.format(ErrorCode.SERVER_HTTP.getMessage(), e.getMessage()), null);
             } else if (e instanceof CassandraCallException) {
-                return new Resp(ErrorCode.SERVER_CASSANDRA.getCode(), String.format(ErrorCode.SERVER_CASSANDRA.getMessage()), null);
+                return new Resp(ErrorCode.SERVER_CASSANDRA.getCode(), String.format(ErrorCode.SERVER_CASSANDRA.getMessage(), e.getMessage()), null);
             } else if (e instanceof OracleCallException) {
-                return new Resp(ErrorCode.SERVER_ORACLE.getCode(), String.format(ErrorCode.SERVER_ORACLE.getMessage()), null);
+                return new Resp(ErrorCode.SERVER_ORACLE.getCode(), String.format(ErrorCode.SERVER_ORACLE.getMessage(), e.getMessage()), null);
             }
         }
         //服务层指定异常
@@ -66,7 +66,7 @@ public class Resp<T> implements Serializable {
             return new Resp(se.getCode(), se.getMessage(), null);
         }
         //未知异常
-        return new Resp(ErrorCode.SERVER.getCode(), String.format(ErrorCode.SERVER.getMessage()), null);
+        return new Resp(ErrorCode.SERVER.getCode(), String.format(ErrorCode.SERVER.getMessage(), e.getMessage()), null);
     }
 
     public static Resp error(String code, String message) {
