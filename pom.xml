@@ -6,7 +6,7 @@
 
     <groupId>com.zhouyutong</groupId>
     <artifactId>z-application</artifactId>
-    <version>1.9</version>
+    <version>2.0</version>
 
     <name>z-application</name>
     <description>application framework.</description>

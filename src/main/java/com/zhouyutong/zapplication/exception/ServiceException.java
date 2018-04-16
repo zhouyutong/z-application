@@ -4,7 +4,7 @@ import com.zhouyutong.zapplication.api.ErrorCode;
 import com.zhouyutong.zapplication.constant.SymbolConstant;
 
 /**
- * 服务异常
+ * 服务层统一异常
  * provider统一使用此异常，通过不同的code和message区分不同的错误
  * code和message @see ErrorCode
  *
@@ -36,7 +36,7 @@ public class ServiceException extends RuntimeException {
         this.code = errorCode.getCode();
     }
 
-    public ServiceException(ErrorCode errorCode, Throwable cause, String appendMessage) {
+    public ServiceException(ErrorCode errorCode, String appendMessage, Throwable cause) {
         super(String.format(errorCode.getMessage(), appendMessage == null ? SymbolConstant.EMPTY : appendMessage), cause);
         this.code = errorCode.getCode();
     }

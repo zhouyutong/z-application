@@ -1,5 +1,6 @@
 package com.zhouyutong.zapplication.api;
 
+import com.zhouyutong.zapplication.exception.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -42,12 +43,28 @@ public class Resp<T> implements Serializable {
         return new Resp(CODE_SUCCESS, MESSAGE_SUCCESS, data);
     }
 
-    public static Resp error(ErrorCode code) {
-        return new Resp(code.getCode(), code.getMessage(), null);
-    }
-
-    public static Resp error(ErrorCode errorCode, String message) {
-        return new Resp(errorCode.getCode(), String.format(errorCode.getMessage(), message), null);
+    public static Resp error(Throwable e) {
+        //远程访问异常
+        if (e instanceof RemoteCallException) {
+            if (e instanceof MysqlCallException) {
+                return new Resp(ErrorCode.SERVER_MYSQL.getCode(), String.format(ErrorCode.SERVER_MYSQL.getMessage()), null);
+            } else if (e instanceof RedisCallException) {
+                return new Resp(ErrorCode.SERVER_REDIS.getCode(), String.format(ErrorCode.SERVER_REDIS.getMessage()), null);
+            } else if (e instanceof ElasticsearchCallException) {
+                return new Resp(ErrorCode.SERVER_ES.getCode(), String.format(ErrorCode.SERVER_ES.getMessage()), null);
+            } else if (e instanceof HttpCallException) {
+                return new Resp(ErrorCode.SERVER_HTTP.getCode(), String.format(ErrorCode.SERVER_HTTP.getMessage()), null);
+            } else if (e instanceof CassandraCallException) {
+                return new Resp(ErrorCode.SERVER_CASSANDRA.getCode(), String.format(ErrorCode.SERVER_CASSANDRA.getMessage()), null);
+            }
+        }
+        //服务层指定异常
+        if (e instanceof ServiceException) {
+            ServiceException se = (ServiceException) e;
+            return new Resp(se.getCode(), se.getMessage(), null);
+        }
+        //未知异常
+        return new Resp(ErrorCode.SERVER.getCode(), String.format(ErrorCode.SERVER.getMessage()), null);
     }
 
     public static Resp error(String code, String message) {
