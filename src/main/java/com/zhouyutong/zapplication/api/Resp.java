@@ -56,6 +56,8 @@ public class Resp<T> implements Serializable {
                 return new Resp(ErrorCode.SERVER_HTTP.getCode(), String.format(ErrorCode.SERVER_HTTP.getMessage()), null);
             } else if (e instanceof CassandraCallException) {
                 return new Resp(ErrorCode.SERVER_CASSANDRA.getCode(), String.format(ErrorCode.SERVER_CASSANDRA.getMessage()), null);
+            } else if (e instanceof OracleCallException) {
+                return new Resp(ErrorCode.SERVER_ORACLE.getCode(), String.format(ErrorCode.SERVER_ORACLE.getMessage()), null);
             }
         }
         //服务层指定异常
