@@ -4,7 +4,6 @@ import com.zhouyutong.zapplication.exception.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -12,7 +11,6 @@ import java.io.Serializable;
  * 通用远程调用的响应对象
  */
 @ApiModel
-@ToString
 public class Resp<T> implements Serializable {
     public static final String CODE_SUCCESS = "0";
     public static final String MESSAGE_SUCCESS = "success";
@@ -75,5 +73,15 @@ public class Resp<T> implements Serializable {
 
     public boolean hasSuccess() {
         return CODE_SUCCESS.equals(this.code);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Resp{");
+        sb.append("code='").append(code).append('\'');
+        sb.append(", msg='").append(msg).append('\'');
+        sb.append(", data=").append(data);
+        sb.append('}');
+        return sb.toString();
     }
 }
