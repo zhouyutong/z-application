@@ -84,4 +84,12 @@ public class Resp<T> implements Serializable {
         sb.append('}');
         return sb.toString();
     }
+
+    public String toSimpleString() {
+        final StringBuilder sb = new StringBuilder("Resp{");
+        sb.append("code='").append(code).append('\'');
+        sb.append(", msg='").append(msg).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
