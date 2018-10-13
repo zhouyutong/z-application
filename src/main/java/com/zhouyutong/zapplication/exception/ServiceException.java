@@ -12,7 +12,15 @@ import com.zhouyutong.zapplication.constant.SymbolConstant;
  * @Date 2016/8/24
  */
 public class ServiceException extends RuntimeException {
-    private final String code;
+    private String code;
+
+    public ServiceException(String message) {
+        super(message);
+    }
+
+    public ServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
     public ServiceException(ErrorCode errorCode) {
         super(errorCode.getMessage());
