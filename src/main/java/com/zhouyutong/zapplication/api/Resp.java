@@ -21,15 +21,15 @@ public class Resp<T> implements Serializable {
 
     @ApiModelProperty(value = "状态码描述,0success非0失败原因")
     @Getter
-    private String msg;
+    private String message;
 
     @ApiModelProperty(value = "返回数据对象格式详见接口说明")
     @Getter
     private T data;
 
-    private Resp(String code, String msg, T data) {
+    private Resp(String code, String message, T data) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
@@ -79,7 +79,7 @@ public class Resp<T> implements Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Resp{");
         sb.append("code='").append(code).append('\'');
-        sb.append(", msg='").append(msg).append('\'');
+        sb.append(", message='").append(message).append('\'');
         sb.append(", data=").append(data);
         sb.append('}');
         return sb.toString();
@@ -88,7 +88,7 @@ public class Resp<T> implements Serializable {
     public String toSimpleString() {
         final StringBuilder sb = new StringBuilder("Resp{");
         sb.append("code='").append(code).append('\'');
-        sb.append(", msg='").append(msg).append('\'');
+        sb.append(", message='").append(message).append('\'');
         sb.append('}');
         return sb.toString();
     }
