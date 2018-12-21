@@ -18,6 +18,10 @@ public class NumberDate {
     public static final String FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
     public static final String FORMAT_YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
     public static final String FORMAT_YYYY_MM_DD_HH_MM_SS_SSS = "yyyy-MM-dd HH:mm:ss.SSS";
+    private static final int SECOND = 1000;
+    private static final int MINUTE = 60 * SECOND;
+    private static final int HOUR = 60 * MINUTE;
+    private static final int DAY = 24 * HOUR;
 
     /**
      * 转换和比较时使用的枚举类型
@@ -165,6 +169,36 @@ public class NumberDate {
     public NumberDate add(int n, TransType transType) {
         Preconditions.checkArgument(n > 0, "参数n必须大于0");
         return addOrMinus(n, transType);
+    }
+
+    /**
+     * 计算相差时间
+     *
+     * @param anthor
+     * @param transType
+     * @return
+     */
+    public long diff(NumberDate anthor, TransType transType) {
+        long timestampMe = this.toDate().getTime();
+        long timestampHim = anthor.toDate().getTime();
+
+        long result = -1;
+        if (TransType.YEAR == transType) {
+            throw new RuntimeException("不支持TransType.YEAR的时间差值计算");
+        } else if (TransType.MONTH == transType) {
+            throw new RuntimeException("不支持TransType.MONTH的时间差值计算");
+        } else if (TransType.DAY == transType) {
+            result = Math.abs((timestampMe - timestampHim) / DAY);
+        } else if (TransType.HOUR == transType) {
+            result = Math.abs((timestampMe - timestampHim) / HOUR);
+        } else if (TransType.MINUTE == transType) {
+            result = Math.abs((timestampMe - timestampHim) / MINUTE);
+        } else if (TransType.SECOND == transType) {
+            result = Math.abs((timestampMe - timestampHim) / SECOND);
+        } else if (TransType.MILLISECOND == transType) {
+            result = Math.abs((timestampMe - timestampHim));
+        }
+        return result;
     }
 
     private NumberDate addOrMinus(int n, TransType transType) {
