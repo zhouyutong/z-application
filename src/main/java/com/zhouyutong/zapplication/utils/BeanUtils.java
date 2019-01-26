@@ -1,7 +1,10 @@
 package com.zhouyutong.zapplication.utils;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.BeanMap;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -12,6 +15,24 @@ import java.util.Map;
  */
 public class BeanUtils {
     private BeanUtils() {
+    }
+
+    public static MultiValueMap<String, Object> bean2MultiValueMap(Object bean) {
+        if (bean == null) {
+            return null;
+        }
+        MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap();
+        BeanMap beanMap = new BeanMap(bean);
+        Iterator keyIterator = beanMap.keyIterator();
+
+        while (keyIterator.hasNext()) {
+            String property = (String) keyIterator.next();
+            if (!"class".equals(property)) {
+                Object value = beanMap.get(property);
+                multiValueMap.put(property, Lists.newArrayList(value));
+            }
+        }
+        return multiValueMap;
     }
 
     public static Map<String, Object> bean2Map(Object bean) {
