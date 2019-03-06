@@ -13,6 +13,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -268,17 +269,25 @@ public class HttpClientUtils {
                     .build();
             httpGet.setConfig(requestConfig);
         }
+        CloseableHttpResponse closeableHttpResponse = null;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("=========httpCallGet request, url:{}, param:{}", url, queryParams == null ? "" : queryParams.toString());
             }
-            HttpResponse httpResponse = closeableHttpClient.execute(httpGet);
-            result = EntityUtils.toString(httpResponse.getEntity(), encoding);
+            closeableHttpResponse = closeableHttpClient.execute(httpGet);
+            result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
             if (log.isDebugEnabled()) {
                 log.debug("=========httpCallGet response, {}", result);
             }
         } catch (IOException ex) {
             throw new HttpCallException(ex.getMessage(), ex);
+        } finally {
+            if (closeableHttpResponse != null) {
+                try {
+                    closeableHttpResponse.close();
+                } catch (IOException e) {
+                }
+            }
         }
         return result;
     }
@@ -350,17 +359,25 @@ public class HttpClientUtils {
             httpPost.setConfig(requestConfig);
         }
 
+        CloseableHttpResponse closeableHttpResponse = null;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("=========httpCallPostForm request, url:{}, param:{}", url, postParams.toString());
             }
-            HttpResponse httpResponse = closeableHttpClient.execute(httpPost);
-            result = EntityUtils.toString(httpResponse.getEntity(), encoding);
+            closeableHttpResponse = closeableHttpClient.execute(httpPost);
+            result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
             if (log.isDebugEnabled()) {
                 log.debug("=========httpCallPostForm response, {}", result);
             }
         } catch (IOException ex) {
             throw new HttpCallException(ex.getMessage(), ex);
+        } finally {
+            if (closeableHttpResponse != null) {
+                try {
+                    closeableHttpResponse.close();
+                } catch (IOException e) {
+                }
+            }
         }
         return result;
     }
@@ -426,17 +443,25 @@ public class HttpClientUtils {
             httpPost.setConfig(requestConfig);
         }
 
+        CloseableHttpResponse closeableHttpResponse = null;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("=========httpCallPostJson request, url:{}, param:{}", url, jsonParams);
             }
-            HttpResponse httpResponse = closeableHttpClient.execute(httpPost);
-            result = EntityUtils.toString(httpResponse.getEntity(), encoding);
+            closeableHttpResponse = closeableHttpClient.execute(httpPost);
+            result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
             if (log.isDebugEnabled()) {
                 log.debug("=========httpCallPostForm response, {}", result);
             }
         } catch (IOException ex) {
             throw new HttpCallException(ex.getMessage(), ex);
+        } finally {
+            if (closeableHttpResponse != null) {
+                try {
+                    closeableHttpResponse.close();
+                } catch (IOException e) {
+                }
+            }
         }
         return result;
     }
@@ -565,12 +590,12 @@ public class HttpClientUtils {
 
     /**
      * 定期回收连接池中失效链接线程<br>
-     * <p>
+     * <p/>
      * 虽然连接池有了，但是由于http连接的特殊性（只有在通讯正在进行（block）时才能够对IO事件做出反应）<br>
      * 一旦连接被放回连接池后，我们无从知道该连接是否还是keepalive的，<br>
      * 且此时也无法监控当前socket的状态（即服务器主动关闭了连接，但客户端没有通讯时是不知道当前连接的状态是怎样的）。<br>
      * 怎么办呢？httpClient采用了一个折中的方案来检查连接的“状态”， 就是由客户端自己通过配置去主动关闭其认为是失效的连接。<br>
-     * <p>
+     * <p/>
      */
     private static class IdleConnectionMonitorThread extends Thread {
         private final Set<HttpClientConnectionManager> connMgrSet = Sets.newHashSet();
