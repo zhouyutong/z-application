@@ -41,6 +41,10 @@ public class Resp<T> implements Serializable {
         return new Resp(CODE_SUCCESS, MESSAGE_SUCCESS, data);
     }
 
+    public static <T> Resp success(T data, String message) {
+        return new Resp(CODE_SUCCESS, message, data);
+    }
+
     public static Resp error(Throwable e) {
         //远程访问异常
         if (e instanceof RemoteCallException) {
