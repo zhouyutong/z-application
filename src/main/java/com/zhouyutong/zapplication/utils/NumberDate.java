@@ -218,10 +218,18 @@ public class NumberDate {
         } else if (TransType.SECOND == transType) {
             me.add(Calendar.SECOND, n);
         } else if (TransType.MILLISECOND == transType) {
-            me.add(Calendar.MILLISECOND, n);
+            throw new RuntimeException("不支持TransType.MILLISECOND的时间增减");
         }
 
-        return NumberDate.newNumberDate(me.getTime());
+        //原来的位数
+        String oldNumberTimesStr = this.toString();
+        //加减后都是到秒
+        String newNumberTimesStr = NumberDate.newNumberDate(me.getTime()).toString();
+        if (newNumberTimesStr.length() > oldNumberTimesStr.length()) {
+            //还原原来的位数
+            newNumberTimesStr = newNumberTimesStr.substring(0, oldNumberTimesStr.length() - 1);
+        }
+        return NumberDate.newNumberDate(Long.parseLong(newNumberTimesStr));
     }
 
     /**
