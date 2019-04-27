@@ -227,7 +227,7 @@ public class NumberDate {
         String newNumberTimesStr = NumberDate.newNumberDate(me.getTime()).toString();
         if (newNumberTimesStr.length() > oldNumberTimesStr.length()) {
             //还原原来的位数
-            newNumberTimesStr = newNumberTimesStr.substring(0, oldNumberTimesStr.length() - 1);
+            newNumberTimesStr = newNumberTimesStr.substring(0, oldNumberTimesStr.length());
         }
         return NumberDate.newNumberDate(Long.parseLong(newNumberTimesStr));
     }
