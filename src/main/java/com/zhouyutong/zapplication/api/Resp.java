@@ -71,6 +71,15 @@ public class Resp<T> implements Serializable {
         return new Resp(ErrorCode.SERVER.getCode(), String.format(ErrorCode.SERVER.getMessage(), e.getMessage()), null);
     }
 
+    public static Resp error(ErrorCode errorCode, String appendMessage) {
+        String message = String.format(errorCode.getMessage(), appendMessage == null ? "" : appendMessage);
+        return new Resp(errorCode.getCode(), message, null);
+    }
+
+    public static Resp error(ErrorCode errorCode) {
+        return new Resp(errorCode.getCode(), errorCode.getMessage(), null);
+    }
+
     public static Resp error(String code, String message) {
         return new Resp(code, message, null);
     }
