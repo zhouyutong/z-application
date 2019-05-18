@@ -55,7 +55,7 @@ public class ServiceException extends RuntimeException {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(getClass().getName());
+        final StringBuilder sb = new StringBuilder(getClass().getSimpleName());
         sb.append("{");
         sb.append("code=").append(getCode());
         sb.append(",");
