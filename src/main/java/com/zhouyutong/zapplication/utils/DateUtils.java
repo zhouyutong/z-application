@@ -215,4 +215,83 @@ public class DateUtils {
         }
         return null;
     }
+
+    /**
+     * 获取本周第一天
+     *
+     * @return
+     */
+    public static Date getFirstDayOfWeek() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.WEEK_OF_MONTH, 0);
+        cal.set(Calendar.DAY_OF_WEEK, 2);
+        return cal.getTime();
+    }
+
+    /**
+     * 获取本周最后一天
+     *
+     * @return
+     */
+    public static Date getLastDayOfWeek() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK, cal.getActualMaximum(Calendar.DAY_OF_WEEK));
+        cal.add(Calendar.DAY_OF_WEEK, 1);
+        return cal.getTime();
+    }
+
+    /**
+     * 获取本月第一天
+     *
+     * @return
+     */
+    public static Date getFirstDayOfMonth() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 0);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        return cal.getTime();
+    }
+
+    /**
+     * 获取本月最后一天
+     *
+     * @return
+     */
+    public static Date getLastDayOfMonth() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return cal.getTime();
+    }
+
+    public static Date addYears(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addYears(date, amount);
+    }
+
+    public static Date addMonths(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addMonths(date, amount);
+    }
+
+    public static Date addWeeks(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addWeeks(date, amount);
+    }
+
+    public static Date addDays(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addDays(date, amount);
+    }
+
+    public static Date addHours(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addHours(date, amount);
+    }
+
+    public static Date addMinutes(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addMinutes(date, amount);
+    }
+
+    public static Date addSeconds(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addSeconds(date, amount);
+    }
+
+    public static Date addMilliseconds(Date date, int amount) {
+        return org.apache.commons.lang3.time.DateUtils.addMilliseconds(date, amount);
+    }
 }
