@@ -21,7 +21,7 @@ public class KafkaProducerProxy {
   }
 
   public static KafkaProducerProxy getInstance(String kafkaBrokers) throws Exception {
-    if (kafkaBrokers != null) {
+    if (kafkaBrokers == null) {
       throw new Exception("kafkaBrokers is blank");
     }
     String key = kafkaBrokers;
