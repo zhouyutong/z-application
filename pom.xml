@@ -35,6 +35,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.18</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
@@ -49,7 +50,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.39</version>
+            <version>1.2.58</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -101,16 +102,5 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>release</id>
-            <name>Nexus Release Repository</name>
-            <url>http://@@:8081/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshot</id>
-            <name>Nexus Snapshot Repository</name>
-            <url>http://@@:8081/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+
 </project>
