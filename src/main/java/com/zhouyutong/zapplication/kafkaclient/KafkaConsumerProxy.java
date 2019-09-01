@@ -138,7 +138,7 @@ public class KafkaConsumerProxy {
                             singleThreadExecutor.execute(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (consumerInterval > 0) {
+                                    if (consumerInterval != null && consumerInterval.longValue() > 0) {
                                         try {
                                             Thread.sleep(consumerInterval);
                                         } catch (InterruptedException e) {
