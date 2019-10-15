@@ -56,9 +56,6 @@ public class KafkaConsumerProxy {
     });
     private Vector<KafkaMessageHandler> handlers = new Vector<>();
 
-    //消费速度,间隔多少毫秒
-    private Long consumerInterval;
-
     private KafkaConsumerProxy(String zkHosts, String topic, String group, Integer fetchThreadNum, Long consumerInterval) {
         this.zkHosts = zkHosts;
         this.topic = topic;
@@ -73,7 +70,6 @@ public class KafkaConsumerProxy {
         this.topicMap = map;
         consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
         this.singleThreadExecutor = Executors.newSingleThreadExecutor();
-        this.consumerInterval = consumerInterval;
     }
 
     private static Properties initConsumerConfigProperties(String zkHosts, String group) {
@@ -147,13 +143,6 @@ public class KafkaConsumerProxy {
                             singleThreadExecutor.execute(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (consumerInterval != null && consumerInterval.longValue() > 0) {
-                                        try {
-                                            Thread.sleep(consumerInterval);
-                                        } catch (InterruptedException e) {
-
-                                        }
-                                    }
                                     if (iterator.hasNext()) {
                                         KafkaStream<byte[], byte[]> subValue = iterator.next();
                                         ConsumerIterator<byte[], byte[]> msgIterator = subValue.iterator();
