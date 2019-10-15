@@ -44,7 +44,16 @@ public class KafkaConsumerProxy {
     /**
      * 负责并发处理消息
      */
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private ExecutorService synchronousQueueThreadPool = new ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 1000L, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(true), new RejectedExecutionHandler() {
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            try {
+                executor.getQueue().put(r);
+            } catch (Exception e) {
+                log.error("");
+            }
+        }
+    });
     private Vector<KafkaMessageHandler> handlers = new Vector<>();
 
     //消费速度,间隔多少毫秒
@@ -134,7 +143,7 @@ public class KafkaConsumerProxy {
                             //topicMap 指定了多少个消费线程，就会有几个subValue,这个线程可以控制消费速度
                             //重启的时候消息丢失,改为原生线程池,队列里最多放50个任务,处理不过来交给调用者,所以要根据业务生产速度,做好消费控制
                             //ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
-                            ExecutorService singleThreadExecutor = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(50), new ThreadPoolExecutor.CallerRunsPolicy());
+                            ExecutorService singleThreadExecutor = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(1), new ThreadPoolExecutor.CallerRunsPolicy());
                             singleThreadExecutor.execute(new Runnable() {
                                 @Override
                                 public void run() {
@@ -153,7 +162,7 @@ public class KafkaConsumerProxy {
                                             final String message = new String(msgObj.message());
                                             for (int i = 0; i < handlers.size(); i++) {
                                                 final KafkaMessageHandler handler = handlers.get(i);
-                                                fixedThreadPool.execute(new Runnable() {
+                                                synchronousQueueThreadPool.execute(new Runnable() {
                                                     @Override
                                                     public void run() {
                                                         try {
