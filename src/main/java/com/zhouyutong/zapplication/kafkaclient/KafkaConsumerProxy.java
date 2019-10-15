@@ -184,19 +184,10 @@ public class KafkaConsumerProxy {
 
     public static void main(String[] args) {
         try {
-            KafkaConsumerProxy.getInstance("ZK_HOSTS", "KAFKA_ORDER_TOPIC", "KAFKA_ORDER_GROUP", 3, 1000l).addHandler(new KafkaConsumerProxy.KafkaMessageHandler() {
+            KafkaConsumerProxy.getInstance("172.16.170.70:2181", "topic-srvMonitor", "test", 1, null).addHandler(new KafkaMessageHandler() {
                 @Override
                 public void handle(String message) {
-                    if (StringUtils.isBlank(message)) {
-                        return;
-                    }
-                    log.debug("kafka order message {}", message);
-                    JSONObject json = JSONObject.parseObject(message);
-                    try {
-                        //处理json
-                    } catch (Exception e) {
-
-                    }
+                    System.out.println(message);
                 }
             }).startConsumer();
         } catch (Exception e) {
