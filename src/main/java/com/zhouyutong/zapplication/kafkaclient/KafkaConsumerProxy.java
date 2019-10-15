@@ -48,7 +48,7 @@ public class KafkaConsumerProxy {
             try {
                 executor.getQueue().put(r);
             } catch (Exception e) {
-                log.error("");
+
             }
         }
     });
