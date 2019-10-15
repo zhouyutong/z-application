@@ -1,6 +1,5 @@
 package com.zhouyutong.zapplication.kafkaclient;
 
-import com.alibaba.fastjson.JSONObject;
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;
@@ -8,7 +7,6 @@ import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.message.MessageAndMetadata;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -149,6 +147,7 @@ public class KafkaConsumerProxy {
                                         while (msgIterator.hasNext()) {
                                             MessageAndMetadata<byte[], byte[]> msgObj = msgIterator.next();
                                             final String message = new String(msgObj.message());
+                                            //System.out.println(Thread.currentThread().getName() + "#@#" + msgObj.topic() + "#@#" + msgObj.partition() + "#@#" + msgObj.offset() + "#@#" + message + "#@#" + System.currentTimeMillis());
                                             for (int i = 0; i < handlers.size(); i++) {
                                                 final KafkaMessageHandler handler = handlers.get(i);
                                                 synchronousQueueThreadPool.execute(new Runnable() {
