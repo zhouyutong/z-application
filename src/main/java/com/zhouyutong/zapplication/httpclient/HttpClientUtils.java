@@ -261,7 +261,7 @@ public class HttpClientUtils {
          */
         if (MapUtils.isNotEmpty(headerMap)) {
             for (Map.Entry<String, String> header : headerMap.entrySet()) {
-                httpGet.setHeader(header.getKey(), header.getValue());
+                httpGet.addHeader(header.getKey(), header.getValue());
             }
         }
 
@@ -353,7 +353,7 @@ public class HttpClientUtils {
          */
         if (MapUtils.isNotEmpty(headerMap)) {
             for (Map.Entry<String, String> header : headerMap.entrySet()) {
-                httpPost.setHeader(header.getKey(), header.getValue());
+                httpPost.addHeader(header.getKey(), header.getValue());
             }
         }
 
@@ -438,7 +438,7 @@ public class HttpClientUtils {
          */
         if (MapUtils.isNotEmpty(headerMap)) {
             for (Map.Entry<String, String> header : headerMap.entrySet()) {
-                httpPost.setHeader(header.getKey(), header.getValue());
+                httpPost.addHeader(header.getKey(), header.getValue());
             }
         }
 
