@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import com.zhouyutong.zapplication.constant.SymbolConstant;
 import com.zhouyutong.zapplication.exception.HttpCallException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -187,43 +188,28 @@ public class HttpClientUtils {
         }
     }
 
-    /**
-     * get请求文本
-     *
-     * @param url - 请求URL
-     * @return string
-     * @throws IllegalArgumentException
-     * @throws HttpCallException
-     */
     public String httpCallGet(String url) {
-        return httpCallGet(url, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+        return httpCallGet(url, null, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
-    /**
-     * get请求文本
-     *
-     * @param url         - 请求URL
-     * @param queryParams - 查询参数,如果要保证参数顺序请使用LinkedHashMap
-     * @return string
-     * @throws IllegalArgumentException
-     * @throws HttpCallException
-     */
     public String httpCallGet(String url, Map<String, String> queryParams) {
-        return httpCallGet(url, queryParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+        return httpCallGet(url, queryParams, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
-    /**
-     * get请求文本
-     *
-     * @param url            - 请求URL
-     * @param queryParams    - 查询参数,如果要保证参数顺序请使用LinkedHashMap
-     * @param requestTimeout - 请求超时时间,毫秒数
-     * @return string
-     * @throws IllegalArgumentException
-     * @throws HttpCallException
-     */
     public String httpCallGet(String url, Map<String, String> queryParams, int requestTimeout) {
-        return httpCallGet(url, queryParams, requestTimeout, DEFAULT_ENCODING);
+        return httpCallGet(url, queryParams, null, requestTimeout, DEFAULT_ENCODING);
+    }
+
+    public String httpCallGet(String url, Map<String, String> queryParams, Map<String, String> headerMap) {
+        return httpCallGet(url, queryParams, headerMap, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+    }
+
+    public String httpCallGet(String url, Map<String, String> queryParams, Map<String, String> headerMap, int requestTimeout) {
+        return httpCallGet(url, queryParams, headerMap, requestTimeout, DEFAULT_ENCODING);
+    }
+
+    public String httpCallGet(String url, Map<String, String> queryParams, int requestTimeout, String encoding) {
+        return httpCallGet(url, queryParams, null, requestTimeout, encoding);
     }
 
     /**
@@ -231,13 +217,14 @@ public class HttpClientUtils {
      *
      * @param url            - 请求URL
      * @param queryParams    - 查询参数,如果要保证参数顺序请使用LinkedHashMap
+     * @param headerMap      - 请求头
      * @param requestTimeout - 请求超时时间,毫秒数
      * @param encoding       字符编码
      * @return string
      * @throws IllegalArgumentException
      * @throws HttpCallException
      */
-    public String httpCallGet(String url, Map<String, String> queryParams, int requestTimeout, String encoding) {
+    public String httpCallGet(String url, Map<String, String> queryParams, Map<String, String> headerMap, int requestTimeout, String encoding) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "Param url must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
 
@@ -246,9 +233,9 @@ public class HttpClientUtils {
         /**
          * 创建查询参数,如果设置了queryParams
          */
-        if (queryParams != null && !queryParams.isEmpty()) {
+        if (MapUtils.isNotEmpty(queryParams)) {
             List<NameValuePair> qparams = Lists.newArrayList();
-            for (Entry<String, String> entry : queryParams.entrySet()) {
+            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
                 qparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
             }
             String queryParamStr = URLEncodedUtils.format(qparams, encoding);
@@ -260,19 +247,28 @@ public class HttpClientUtils {
         }
 
         HttpGet httpGet = new HttpGet(urlToSend);
+        /**
+         * 设置超时，覆盖httpClient默认参数
+         */
         if (requestTimeout > 0) {
-            /**
-             * 设置超时，覆盖httpClient默认参数
-             */
             RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
                     .setSocketTimeout(requestTimeout)
                     .build();
             httpGet.setConfig(requestConfig);
         }
+        /**
+         * 设置请求头
+         */
+        if (MapUtils.isNotEmpty(headerMap)) {
+            for (Map.Entry<String, String> header : headerMap.entrySet()) {
+                httpGet.setHeader(header.getKey(), header.getValue());
+            }
+        }
+
         CloseableHttpResponse closeableHttpResponse = null;
         try {
             if (log.isDebugEnabled()) {
-                log.debug("=========httpCallGet request, url:{}, param:{}", url, queryParams == null ? "" : queryParams.toString());
+                log.debug("=========httpCallGet request, url:{}, header:{}, param:{}", url, print(headerMap), print(queryParams));
             }
             closeableHttpResponse = closeableHttpClient.execute(httpGet);
             result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
@@ -292,31 +288,24 @@ public class HttpClientUtils {
         return result;
     }
 
-    /**
-     * post请求上传form表单
-     *
-     * @param url        - 请求URL
-     * @param postParams - 查询参数,如果要保证参数顺序请使用LinkedHashMap
-     * @return
-     * @throws IllegalArgumentException
-     * @throws HttpCallException
-     */
     public String httpCallPostForm(String url, Map<String, String> postParams) {
-        return httpCallPostForm(url, postParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+        return httpCallPostForm(url, postParams, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
-    /**
-     * post请求上传form表单
-     *
-     * @param url            - 请求URL
-     * @param postParams     - 查询参数,如果要保证参数顺序请使用LinkedHashMap
-     * @param requestTimeout - 请求超时时间,毫秒数
-     * @return
-     * @throws IllegalArgumentException
-     * @throws HttpCallException
-     */
     public String httpCallPostForm(String url, Map<String, String> postParams, int requestTimeout) {
-        return httpCallPostForm(url, postParams, requestTimeout, DEFAULT_ENCODING);
+        return httpCallPostForm(url, postParams, null, requestTimeout, DEFAULT_ENCODING);
+    }
+
+    public String httpCallPostForm(String url, Map<String, String> postParams, int requestTimeout, String encoding) {
+        return httpCallPostForm(url, postParams, null, requestTimeout, encoding);
+    }
+
+    public String httpCallPostForm(String url, Map<String, String> postParams, Map<String, String> headerMap) {
+        return httpCallPostForm(url, postParams, headerMap, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+    }
+
+    public String httpCallPostForm(String url, Map<String, String> postParams, Map<String, String> headerMap, int requestTimeout) {
+        return httpCallPostForm(url, postParams, headerMap, requestTimeout, DEFAULT_ENCODING);
     }
 
     /**
@@ -324,13 +313,14 @@ public class HttpClientUtils {
      *
      * @param url            - 请求URL
      * @param postParams     - 查询参数,如果要保证参数顺序请使用LinkedHashMap
+     * @param headerMap      - 请求头
      * @param requestTimeout - 请求超时时间,毫秒数
      * @param encoding
      * @return
      * @throws IllegalArgumentException
      * @throws HttpCallException
      */
-    public String httpCallPostForm(String url, Map<String, String> postParams, int requestTimeout, String encoding) {
+    public String httpCallPostForm(String url, Map<String, String> postParams, Map<String, String> headerMap, int requestTimeout, String encoding) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "Param url must be not null and empty");
         Preconditions.checkArgument(postParams != null && !postParams.isEmpty(), "Param postParams must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
@@ -349,20 +339,28 @@ public class HttpClientUtils {
             throw new IllegalArgumentException("Unsupported Encoding:" + encoding);
         }
         httpPost.setEntity(entity);
+        /**
+         * 设置超时，覆盖httpClient默认参数
+         */
         if (requestTimeout > 0) {
-            /**
-             * 设置超时，覆盖httpClient默认参数
-             */
             RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
                     .setSocketTimeout(requestTimeout)
                     .build();
             httpPost.setConfig(requestConfig);
         }
+        /**
+         * 设置请求头
+         */
+        if (MapUtils.isNotEmpty(headerMap)) {
+            for (Map.Entry<String, String> header : headerMap.entrySet()) {
+                httpPost.setHeader(header.getKey(), header.getValue());
+            }
+        }
 
         CloseableHttpResponse closeableHttpResponse = null;
         try {
             if (log.isDebugEnabled()) {
-                log.debug("=========httpCallPostForm request, url:{}, param:{}", url, postParams.toString());
+                log.debug("=========httpCallPostForm request, url:{}, header:{}, param:{}", url, print(headerMap), print(postParams));
             }
             closeableHttpResponse = closeableHttpClient.execute(httpPost);
             result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
@@ -382,31 +380,24 @@ public class HttpClientUtils {
         return result;
     }
 
-    /**
-     * post请求上传json
-     *
-     * @param url        - 请求URL
-     * @param jsonParams - json参数
-     * @return
-     * @throws IllegalArgumentException
-     * @throws HttpCallException
-     */
     public String httpCallPostJson(String url, String jsonParams) {
-        return httpCallPostJson(url, jsonParams, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+        return httpCallPostJson(url, jsonParams, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
     }
 
-    /**
-     * post请求上传json
-     *
-     * @param url            - 请求URL
-     * @param jsonParams     - json参数
-     * @param requestTimeout - 请求超时时间,毫秒数
-     * @return
-     * @throws IllegalArgumentException
-     * @throws HttpCallException
-     */
     public String httpCallPostJson(String url, String jsonParams, int requestTimeout) {
-        return httpCallPostJson(url, jsonParams, requestTimeout, DEFAULT_ENCODING);
+        return httpCallPostJson(url, jsonParams, null, requestTimeout, DEFAULT_ENCODING);
+    }
+
+    public String httpCallPostJson(String url, String jsonParams, int requestTimeout, String encoding) {
+        return httpCallPostJson(url, jsonParams, null, requestTimeout, encoding);
+    }
+
+    public String httpCallPostJson(String url, String jsonParams, Map<String, String> headerMap) {
+        return httpCallPostJson(url, jsonParams, headerMap, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+    }
+
+    public String httpCallPostJson(String url, String jsonParams, Map<String, String> headerMap, int requestTimeout) {
+        return httpCallPostJson(url, jsonParams, headerMap, requestTimeout, DEFAULT_ENCODING);
     }
 
     /**
@@ -414,13 +405,14 @@ public class HttpClientUtils {
      *
      * @param url            - 请求URL
      * @param jsonParams     - 查询参数,如果要保证参数顺序请使用LinkedHashMap
+     * @param headerMap      - 请求头
      * @param requestTimeout - 请求超时时间,毫秒数
      * @param encoding
      * @return
      * @throws IllegalArgumentException
      * @throws HttpCallException
      */
-    public String httpCallPostJson(String url, String jsonParams, int requestTimeout, String encoding) {
+    public String httpCallPostJson(String url, String jsonParams, Map<String, String> headerMap, int requestTimeout, String encoding) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "Param url must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jsonParams), "Param jsonParams must be not null and empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
@@ -432,21 +424,28 @@ public class HttpClientUtils {
         // entity.setContentType("application/json;charset=" + encoding);
         entity.setContentType("application/json");
         httpPost.setEntity(entity);
-
+        /**
+         * 设置超时，覆盖httpClient默认参数
+         */
         if (requestTimeout > 0) {
-            /**
-             * 设置超时，覆盖httpClient默认参数
-             */
             RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
                     .setSocketTimeout(requestTimeout)
                     .build();
             httpPost.setConfig(requestConfig);
         }
+        /**
+         * 设置请求头
+         */
+        if (MapUtils.isNotEmpty(headerMap)) {
+            for (Map.Entry<String, String> header : headerMap.entrySet()) {
+                httpPost.setHeader(header.getKey(), header.getValue());
+            }
+        }
 
         CloseableHttpResponse closeableHttpResponse = null;
         try {
             if (log.isDebugEnabled()) {
-                log.debug("=========httpCallPostJson request, url:{}, param:{}", url, jsonParams);
+                log.debug("=========httpCallPostJson request, url:{}, header:{}, param:{}", url, print(headerMap), jsonParams);
             }
             closeableHttpResponse = closeableHttpClient.execute(httpPost);
             result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
@@ -700,5 +699,14 @@ public class HttpClientUtils {
             }
             return retry;
         }
+    }
+
+    private static String print(Map<?, ?> map) {
+        if (map == null) {
+            return "";
+        } else {
+            return map.toString();
+        }
+
     }
 }
