@@ -16,8 +16,19 @@ import java.util.Date;
  */
 public class NumberDate {
     public static final String FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
+    public static final String FORMAT_YYYY_MM_DD_HH = "yyyy-MM-dd HH";
+    public static final String FORMAT_YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm";
     public static final String FORMAT_YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
     public static final String FORMAT_YYYY_MM_DD_HH_MM_SS_SSS = "yyyy-MM-dd HH:mm:ss.SSS";
+    public static final String[] SUPPORT_FORMAT_ARRAY = new String[]{
+            FORMAT_YYYY_MM_DD,
+            FORMAT_YYYY_MM_DD_HH,
+            FORMAT_YYYY_MM_DD_HH_MM,
+            FORMAT_YYYY_MM_DD_HH_MM_SS,
+            FORMAT_YYYY_MM_DD_HH_MM_SS_SSS
+    };
+
+    String[] supportFormat = new String[]{};
     private static final int SECOND = 1000;
     private static final int MINUTE = 60 * SECOND;
     private static final int HOUR = 60 * MINUTE;
@@ -288,5 +299,13 @@ public class NumberDate {
             }
         }
         return String.valueOf(this.numberTimes);
+    }
+
+    public String toFormatString(String format) {
+        if (org.apache.commons.lang3.StringUtils.equalsAny(format, SUPPORT_FORMAT_ARRAY)) {
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            return sdf.format(this.toDate());
+        }
+        throw new IllegalArgumentException("不支持的日期格式:" + format);
     }
 }
