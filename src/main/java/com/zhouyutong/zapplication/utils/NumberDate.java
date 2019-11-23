@@ -57,14 +57,15 @@ public class NumberDate {
     }
 
     private NumberDate(long numberTimes) {
-        int length = String.valueOf(numberTimes).length();
+        String numberTimesStr = String.valueOf(numberTimes);
+        int length = numberTimesStr.length();
         if (length < 8) {
             throw new IllegalArgumentException("numberTimes必须至少是8位数字：如20111020表示yyyyMMdd");
         }
         if (length > 17) {
             throw new IllegalArgumentException("numberTimes最多是17位数字：如20111020101010555表示yyyyMMddHHmmssSSS");
         }
-        StringBuilder sb = new StringBuilder(String.valueOf(numberTimes));
+        StringBuilder sb = new StringBuilder(numberTimesStr);
         int addZeroLength = 17 - length; //后补0的个数
         for (int i = 0; i < addZeroLength; i++) {
             sb.append("0");
