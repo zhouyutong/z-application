@@ -28,7 +28,6 @@ public class NumberDate {
             FORMAT_YYYY_MM_DD_HH_MM_SS_SSS
     };
 
-    String[] supportFormat = new String[]{};
     private static final int SECOND = 1000;
     private static final int MINUTE = 60 * SECOND;
     private static final int HOUR = 60 * MINUTE;
@@ -58,8 +57,19 @@ public class NumberDate {
     }
 
     private NumberDate(long numberTimes) {
-        Preconditions.checkArgument(String.valueOf(numberTimes).length() >= 4, "必须至少是4位数字：如2016");
-        this.numberTimes = numberTimes;
+        int length = String.valueOf(numberTimes).length();
+        if (length < 8) {
+            throw new IllegalArgumentException("numberTimes必须至少是8位数字：如20111020表示yyyyMMdd");
+        }
+        if (length > 17) {
+            throw new IllegalArgumentException("numberTimes最多是17位数字：如20111020101010555表示yyyyMMddHHmmssSSS");
+        }
+        StringBuilder sb = new StringBuilder(String.valueOf(numberTimes));
+        int addZeroLength = 17 - length; //后补0的个数
+        for (int i = 0; i < addZeroLength; i++) {
+            sb.append("0");
+        }
+        this.numberTimes = Long.parseLong(sb.toString());
     }
 
     public static NumberDate newNumberDate(long numberTimes) {
@@ -68,8 +78,10 @@ public class NumberDate {
 
     public static NumberDate newNumberDate(String strDate, String format) {
         Preconditions.checkNotNull(strDate);
-        Preconditions.checkNotNull(format);
-        Date date = null;
+        if (!org.apache.commons.lang3.StringUtils.equalsAny(format, SUPPORT_FORMAT_ARRAY)) {
+            throw new IllegalArgumentException("不支持的日期格式:" + format);
+        }
+        Date date;
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         try {
             date = sdf.parse(strDate);
