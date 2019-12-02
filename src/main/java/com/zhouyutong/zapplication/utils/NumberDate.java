@@ -66,7 +66,8 @@ public class NumberDate {
             throw new IllegalArgumentException("numberTimes最多是17位数字：如20111020101010555表示yyyyMMddHHmmssSSS");
         }
         StringBuilder sb = new StringBuilder(numberTimesStr);
-        int addZeroLength = 17 - length; //后补0的个数
+        //如果长度<=14按秒处理,否则按毫秒处理
+        int addZeroLength = length <= 14 ? 14 - length : 17 - length; //后补0的个数
         for (int i = 0; i < addZeroLength; i++) {
             sb.append("0");
         }
