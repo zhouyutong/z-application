@@ -15,14 +15,15 @@ import java.io.Serializable;
  */
 public class ErrorCode implements Serializable {
 
-    public static final ErrorCode PARAM_REQUIRED = new ErrorCode("4001", "Parameter [%s] can not be empty.");
-    public static final ErrorCode PARAM_INVALID = new ErrorCode("4002", "Parameter [%s] format is invalid..");
-    public static final ErrorCode SIGN = new ErrorCode("4003", "Signature verification failure.");
-    public static final ErrorCode AUTHORITY = new ErrorCode("4004", "Do this without permission.");
-    public static final ErrorCode DECRYPT = new ErrorCode("4005", "Decryption failure.");
-    public static final ErrorCode INVALID_CALLER = new ErrorCode("4006", "Illegal invocation party.");
-    public static final ErrorCode UPLOAD_TYPE = new ErrorCode("4007", "File type allowed only [%s] to upload.");
-    public static final ErrorCode UPLOAD_SIZE = new ErrorCode("4008", "File size can't exceed [%s]K.");
+    public static final ErrorCode PARAM_REQUIRED = new ErrorCode("4001", "参数[%s]不能为空");
+    public static final ErrorCode PARAM_INVALID = new ErrorCode("4002", "参数[%s]格式无效");
+    public static final ErrorCode SIGN = new ErrorCode("4003", "参数签名验证失败");
+    public static final ErrorCode AUTHORITY = new ErrorCode("4004", "您没有权限访问该接口");
+    public static final ErrorCode DECRYPT = new ErrorCode("4005", "请求数据解密失败");
+    public static final ErrorCode INVALID_CALLER = new ErrorCode("4006", "无效的调用方");
+    public static final ErrorCode UPLOAD_TYPE = new ErrorCode("4007", "您上传的文件类型不允许");
+    public static final ErrorCode UPLOAD_SIZE = new ErrorCode("4008", "您上传的文件大小不能超过[%s]KB");
+    public static final ErrorCode SYSTEM_BUSY = new ErrorCode("4009", "服务器繁忙，请稍后重试");
     /**
      * 5000通用服务器异常,5001访问redis异常
      */
