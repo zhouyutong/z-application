@@ -23,7 +23,7 @@ public class Resp<T> implements Serializable {
     @Getter
     private String message;
 
-    @ApiModelProperty(value = "返回数据对象格式详见接口说明")
+    @ApiModelProperty(value = "返回数据")
     @Getter
     private T data;
 

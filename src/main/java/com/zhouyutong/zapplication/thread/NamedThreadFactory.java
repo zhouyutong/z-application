@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Date 2017/7/4
  */
 public class NamedThreadFactory implements ThreadFactory {
-    public static final String COMMON_PREFIX = "namedPool-";
+    public static final String COMMON_PREFIX = "pool-";
     private static final AtomicInteger threadPoolNumber = new AtomicInteger(1);
     private final ThreadGroup group;
     private final AtomicInteger threadNumber = new AtomicInteger(1);
