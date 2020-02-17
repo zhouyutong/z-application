@@ -27,13 +27,13 @@ public class ErrorCode implements Serializable {
     /**
      * 5000通用服务器异常,5001访问redis异常
      */
-    public static final ErrorCode SERVER = new ErrorCode("5000", "Server error,[%s].");
-    public static final ErrorCode SERVER_REDIS = new ErrorCode("5001", "Server error,[%s].");
-    public static final ErrorCode SERVER_MYSQL = new ErrorCode("5002", "Server error,[%s].");
-    public static final ErrorCode SERVER_ES = new ErrorCode("5003", "Server error,[%s].");
-    public static final ErrorCode SERVER_HTTP = new ErrorCode("5004", "Server error,[%s].");
-    public static final ErrorCode SERVER_CASSANDRA = new ErrorCode("5005", "Server error,[%s].");
-    public static final ErrorCode SERVER_ORACLE = new ErrorCode("5006", "Server error,[%s].");
+    public static final ErrorCode SERVER = new ErrorCode("5000", "服务器内部错误,[%s].");
+    public static final ErrorCode SERVER_REDIS = new ErrorCode("5001", "服务器内部错误,[%s].");
+    public static final ErrorCode SERVER_MYSQL = new ErrorCode("5002", "服务器内部错误,[%s].");
+    public static final ErrorCode SERVER_ES = new ErrorCode("5003", "服务器内部错误,[%s].");
+    public static final ErrorCode SERVER_HTTP = new ErrorCode("5004", "服务器内部错误,[%s].");
+    public static final ErrorCode SERVER_CASSANDRA = new ErrorCode("5005", "服务器内部错误,[%s].");
+    public static final ErrorCode SERVER_ORACLE = new ErrorCode("5006", "服务器内部错误,[%s].");
 
     @Getter
     private String code;
