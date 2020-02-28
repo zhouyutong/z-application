@@ -24,6 +24,8 @@ public class ErrorCode implements Serializable {
     public static final ErrorCode UPLOAD_TYPE = new ErrorCode("4007", "您上传的文件类型不允许");
     public static final ErrorCode UPLOAD_SIZE = new ErrorCode("4008", "您上传的文件大小不能超过[%s]KB");
     public static final ErrorCode SYSTEM_BUSY = new ErrorCode("4009", "服务器繁忙，请稍后重试");
+    public static final ErrorCode NEED_LOGIN = new ErrorCode("4010", "登录超时,请重新登录");
+    public static final ErrorCode OPER_FAIL = new ErrorCode("4011", "操作失败,[%s]");
     /**
      * 5000通用服务器异常,5001访问redis异常
      */
