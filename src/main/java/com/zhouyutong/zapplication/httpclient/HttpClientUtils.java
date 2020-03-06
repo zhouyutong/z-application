@@ -265,19 +265,24 @@ public class HttpClientUtils {
             }
         }
 
+        long start = System.currentTimeMillis();
+        StringBuilder logSb = new StringBuilder("httpCallGet|");
+        logSb.append("Url:").append(url).append("|");
+        logSb.append("Timeout:").append(requestTimeout).append("|");
+        logSb.append("Header:").append(print(headerMap)).append("|");
+        logSb.append("Param:").append(print(queryParams)).append("|");
+
         CloseableHttpResponse closeableHttpResponse = null;
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("=========httpCallGet request, url:{}, header:{}, param:{}", url, print(headerMap), print(queryParams));
-            }
             closeableHttpResponse = closeableHttpClient.execute(httpGet);
             result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
-            if (log.isDebugEnabled()) {
-                log.debug("=========httpCallGet response, {}", result);
-            }
+            logSb.append("Result:").append(result).append("|");
         } catch (IOException ex) {
+            logSb.append("Error:").append(ex.getMessage()).append("|");
             throw new HttpCallException(ex.getMessage(), ex);
         } finally {
+            long end = System.currentTimeMillis();
+            logSb.append("TimeCost:").append(end - start);
             if (closeableHttpResponse != null) {
                 try {
                     closeableHttpResponse.close();
@@ -357,19 +362,24 @@ public class HttpClientUtils {
             }
         }
 
+        long start = System.currentTimeMillis();
+        StringBuilder logSb = new StringBuilder("httpCallPostForm|");
+        logSb.append("Url:").append(url).append("|");
+        logSb.append("Timeout:").append(requestTimeout).append("|");
+        logSb.append("Header:").append(print(headerMap)).append("|");
+        logSb.append("Param:").append(print(postParams)).append("|");
+
         CloseableHttpResponse closeableHttpResponse = null;
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("=========httpCallPostForm request, url:{}, header:{}, param:{}", url, print(headerMap), print(postParams));
-            }
             closeableHttpResponse = closeableHttpClient.execute(httpPost);
             result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
-            if (log.isDebugEnabled()) {
-                log.debug("=========httpCallPostForm response, {}", result);
-            }
+            logSb.append("Result:").append(result).append("|");
         } catch (IOException ex) {
+            logSb.append("Error:").append(ex.getMessage()).append("|");
             throw new HttpCallException(ex.getMessage(), ex);
         } finally {
+            long end = System.currentTimeMillis();
+            logSb.append("TimeCost:").append(end - start);
             if (closeableHttpResponse != null) {
                 try {
                     closeableHttpResponse.close();
@@ -442,19 +452,24 @@ public class HttpClientUtils {
             }
         }
 
+        long start = System.currentTimeMillis();
+        StringBuilder logSb = new StringBuilder("httpCallPostJson|");
+        logSb.append("Url:").append(url).append("|");
+        logSb.append("Timeout:").append(requestTimeout).append("|");
+        logSb.append("Header:").append(print(headerMap)).append("|");
+        logSb.append("Param:").append(jsonParams).append("|");
+
         CloseableHttpResponse closeableHttpResponse = null;
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("=========httpCallPostJson request, url:{}, header:{}, param:{}", url, print(headerMap), jsonParams);
-            }
             closeableHttpResponse = closeableHttpClient.execute(httpPost);
             result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
-            if (log.isDebugEnabled()) {
-                log.debug("=========httpCallPostForm response, {}", result);
-            }
+            logSb.append("Result:").append(result).append("|");
         } catch (IOException ex) {
+            logSb.append("Error:").append(ex.getMessage()).append("|");
             throw new HttpCallException(ex.getMessage(), ex);
         } finally {
+            long end = System.currentTimeMillis();
+            logSb.append("TimeCost:").append(end - start);
             if (closeableHttpResponse != null) {
                 try {
                     closeableHttpResponse.close();
