@@ -283,6 +283,7 @@ public class HttpClientUtils {
         } finally {
             long end = System.currentTimeMillis();
             logSb.append("TimeCost:").append(end - start);
+            log.info(logSb.toString());
             if (closeableHttpResponse != null) {
                 try {
                     closeableHttpResponse.close();
@@ -380,6 +381,7 @@ public class HttpClientUtils {
         } finally {
             long end = System.currentTimeMillis();
             logSb.append("TimeCost:").append(end - start);
+            log.info(logSb.toString());
             if (closeableHttpResponse != null) {
                 try {
                     closeableHttpResponse.close();
@@ -470,6 +472,7 @@ public class HttpClientUtils {
         } finally {
             long end = System.currentTimeMillis();
             logSb.append("TimeCost:").append(end - start);
+            log.info(logSb.toString());
             if (closeableHttpResponse != null) {
                 try {
                     closeableHttpResponse.close();
