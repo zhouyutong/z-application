@@ -4,6 +4,7 @@ import com.zhouyutong.zapplication.exception.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -65,7 +66,9 @@ public class Resp<T> implements Serializable {
         //服务层指定异常
         if (e instanceof ServiceException) {
             ServiceException se = (ServiceException) e;
-            return new Resp(se.getCode(), se.getMessage(), null);
+            String code = StringUtils.isBlank(se.getCode()) ? ErrorCode.OPER_FAIL.getCode() : se.getCode();
+            String msg = StringUtils.isBlank(se.getMessage()) ? ErrorCode.OPER_FAIL.getMessage() : se.getMessage();
+            return new Resp(code, msg, null);
         }
         //未知异常
         return new Resp(ErrorCode.SERVER.getCode(), String.format(ErrorCode.SERVER.getMessage(), e.getMessage()), null);
