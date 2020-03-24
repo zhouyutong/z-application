@@ -87,6 +87,10 @@ public class Resp<T> implements Serializable {
         return new Resp(code, message, null);
     }
 
+    public static Resp error(String message) {
+        return new Resp(ErrorCode.OPER_FAIL.getCode(), message, null);
+    }
+
     public boolean hasSuccess() {
         return CODE_SUCCESS.equals(this.code);
     }
