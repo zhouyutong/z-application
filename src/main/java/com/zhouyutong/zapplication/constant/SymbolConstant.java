@@ -2,8 +2,6 @@ package com.zhouyutong.zapplication.constant;
 
 /**
  * 符号常量
- *
- * @author homelink
  */
 public class SymbolConstant {
 

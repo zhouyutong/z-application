@@ -7,9 +7,6 @@ import com.zhouyutong.zapplication.constant.SymbolConstant;
  * 服务层统一异常
  * provider统一使用此异常，通过不同的code和message区分不同的错误
  * code和message @see ErrorCode
- *
- * @Author zhoutao
- * @Date 2016/8/24
  */
 public class ServiceException extends RuntimeException {
     private String code;

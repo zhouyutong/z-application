@@ -2,9 +2,6 @@ package com.zhouyutong.zapplication.constant;
 
 /**
  * 应用相关常量部门应该统一
- *
- * @Author zhoutao
- * @Date 2016/9/8
  */
 public final class ApplicationConstant {
 

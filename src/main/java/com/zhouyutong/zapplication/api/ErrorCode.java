@@ -10,8 +10,6 @@ import java.io.Serializable;
  * 其他如4100、4200等开头各模块自行定义
  * 500开头系统保留不要覆盖
  * 只需要继承ErrorCode就可以
- * <p>
- * Created by zhoutao on 16/9/2.
  */
 public class ErrorCode implements Serializable {
 
