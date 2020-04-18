@@ -93,6 +93,14 @@ public class NumberDate {
         return newNumberDate(date);
     }
 
+    public static NumberDate now() {
+        return new NumberDate(DateUtils.format2Long(new Date(), false));
+    }
+
+    public static NumberDate nowOfMillisecond() {
+        return new NumberDate(DateUtils.format2Long(new Date(), true));
+    }
+
     public static NumberDate newNumberDate(Date date) {
         Preconditions.checkNotNull(date);
         return new NumberDate(DateUtils.format2Long(date, false));
