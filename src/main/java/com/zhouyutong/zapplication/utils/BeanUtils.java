@@ -56,7 +56,7 @@ public class BeanUtils {
 
 		try {
 			T obj = initClass(beanClass);
-			org.apache.commons.beanutils.BeanUtils.copyProperties(obj, map);
+			org.springframework.beans.BeanUtils.copyProperties(map, obj);
 			return obj;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
