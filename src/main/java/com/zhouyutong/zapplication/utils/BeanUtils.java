@@ -19,13 +19,13 @@ public class BeanUtils {
 		}
 		MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap();
 		BeanMap beanMap = new BeanMap(bean);
-		Iterator keyIterator = beanMap.keyIterator();
 
-		while (keyIterator.hasNext()) {
-			String property = (String) keyIterator.next();
-			if (!"class".equals(property)) {
-				Object value = beanMap.get(property);
-				multiValueMap.put(property, Lists.newArrayList(value));
+		Iterator<Map.Entry<Object, Object>> entryIterator = beanMap.entryIterator();
+		while (entryIterator.hasNext()) {
+			Map.Entry<Object, Object> entry = entryIterator.next();
+			String key = entry.getKey().toString();
+			if (!"class".equals(key)) {
+				multiValueMap.put(key, Lists.newArrayList(entry.getValue()));
 			}
 		}
 		return multiValueMap;
@@ -37,14 +37,15 @@ public class BeanUtils {
 		}
 		Map<String, Object> map = Maps.newHashMap();
 		BeanMap beanMap = new BeanMap(bean);
-		Iterator<String> keyIterator = beanMap.keyIterator();
-		while (keyIterator.hasNext()) {
-			String property = keyIterator.next();
-			if ("class".equals(property)) {
+
+		Iterator<Map.Entry<Object, Object>> entryIterator = beanMap.entryIterator();
+		while (entryIterator.hasNext()) {
+			Map.Entry<Object, Object> entry = entryIterator.next();
+			String key = entry.getKey().toString();
+			if ("class".equals(key)) {
 				continue;
 			}
-			Object value = beanMap.get(property);
-			map.put(property, value);
+			map.put(key, entry.getValue());
 		}
 		return map;
 	}
@@ -56,7 +57,7 @@ public class BeanUtils {
 
 		try {
 			T obj = initClass(beanClass);
-			org.springframework.beans.BeanUtils.copyProperties(map, obj);
+			org.apache.commons.beanutils.BeanUtils.copyProperties(obj, map);
 			return obj;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -75,7 +76,7 @@ public class BeanUtils {
 			throw new RuntimeException("copyProperties error,第二个参数源对象为NULL");
 		}
 		try {
-			org.springframework.beans.BeanUtils.copyProperties(orig, dest);
+			org.apache.commons.beanutils.BeanUtils.copyProperties(dest, orig);
 		} catch (Exception e) {
 			throw new RuntimeException("copyProperties error", e);
 		}
