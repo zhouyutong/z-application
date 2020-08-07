@@ -81,16 +81,7 @@ public class HttpClientUtils {
 	 * 默认keepalive时间1分钟
 	 */
 	public static final long DEFAULT_KEEPALIVE_TIME = 60000L;
-	/**
-	 * 默认客户端级别的设置
-	 */
-	private static RequestConfig DEFAULT_REQUEST_CONFIG = RequestConfig.custom()
-			.setRedirectsEnabled(true)  //自动处理重定向
-			.setMaxRedirects(10)        //自动重定向次数
-			.setConnectionRequestTimeout(DEFAULT_CONNECTION_REQUEST_TIMEOUT)
-			.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT)
-			.setSocketTimeout(DEFAULT_REQUEST_TIMEOUT)
-			.build();
+
 	/**
 	 * http连接池管理器
 	 */
@@ -100,25 +91,10 @@ public class HttpClientUtils {
 	 */
 	private CloseableHttpClient closeableHttpClient;
 
-	public PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager() {
-		return poolingHttpClientConnectionManager;
-	}
-
-	public CloseableHttpClient getCloseableHttpClient() {
-		return closeableHttpClient;
-	}
-
-	public ConnectionConfig getDefaultConnectionConfig() {
-		return defaultConnectionConfig;
-	}
-
-	public SocketConfig getDefaultSocketConfig() {
-		return defaultSocketConfig;
-	}
-
-	public static IdleConnectionMonitorThread getIdleThread() {
-		return idleThread;
-	}
+	/**
+	 * 默认客户端级别的设置
+	 */
+	private RequestConfig defaultRequestConfig;
 
 	/**
 	 * 默认链接相关的设置
@@ -130,13 +106,7 @@ public class HttpClientUtils {
 	/**
 	 * 默认Socket相关的设置
 	 */
-	private SocketConfig defaultSocketConfig = SocketConfig.custom()
-			.setTcpNoDelay(this.isTcpNodelay())
-			.setSoTimeout(DEFAULT_REQUEST_TIMEOUT)
-			.setSoLinger(this.getSoLinger())
-			.setSoReuseAddress(this.isSoReuseaddr())
-			.setSoKeepAlive(this.isKeepAlive())
-			.build();
+	private SocketConfig defaultSocketConfig;
 
 	/**
 	 * 定期回收过期链接线程
@@ -150,40 +120,40 @@ public class HttpClientUtils {
 	}
 
 	public HttpClientUtils() {
-		this(DEFAULT_REQUEST_CONFIG, DEFAULT_USER_AGENT);
+		this(DEFAULT_CONNECTION_REQUEST_TIMEOUT, DEFAULT_CONNECT_TIMEOUT, DEFAULT_REQUEST_TIMEOUT, DEFAULT_USER_AGENT);
 	}
 
 	public HttpClientUtils(String userAgent) {
-		this(DEFAULT_REQUEST_CONFIG, userAgent);
+		this(DEFAULT_CONNECTION_REQUEST_TIMEOUT, DEFAULT_CONNECT_TIMEOUT, DEFAULT_REQUEST_TIMEOUT, userAgent);
 	}
 
 	public HttpClientUtils(int socketTimeout, String userAgent) {
-		this(RequestConfig.copy(DEFAULT_REQUEST_CONFIG).setSocketTimeout(socketTimeout).build(), userAgent);
-	}
-
-	public HttpClientUtils(int connectionRequestTimeout, int connectTimeout, int socketTimeout, String userAgent) {
-		this(RequestConfig.copy(DEFAULT_REQUEST_CONFIG)
-				.setConnectionRequestTimeout(connectionRequestTimeout)
-				.setConnectTimeout(connectTimeout)
-				.setSocketTimeout(socketTimeout)
-				.build(), userAgent);
+		this(DEFAULT_CONNECTION_REQUEST_TIMEOUT, DEFAULT_CONNECT_TIMEOUT, socketTimeout, userAgent);
 	}
 
 	public HttpClientUtils(int socketTimeout) {
-		this(RequestConfig.copy(DEFAULT_REQUEST_CONFIG)
-				.setSocketTimeout(socketTimeout)
-				.build(), DEFAULT_USER_AGENT);
+		this(DEFAULT_CONNECTION_REQUEST_TIMEOUT, DEFAULT_CONNECT_TIMEOUT, socketTimeout, DEFAULT_USER_AGENT);
 	}
 
 	public HttpClientUtils(int connectionRequestTimeout, int connectTimeout, int socketTimeout) {
-		this(RequestConfig.copy(DEFAULT_REQUEST_CONFIG)
+		this(connectionRequestTimeout, connectTimeout, socketTimeout, DEFAULT_USER_AGENT);
+	}
+
+	private HttpClientUtils(int connectionRequestTimeout, int connectTimeout, int socketTimeout, String userAgent) {
+		defaultRequestConfig = RequestConfig.custom()
+				.setRedirectsEnabled(true)  //自动处理重定向
+				.setMaxRedirects(10)        //自动重定向次数
 				.setConnectionRequestTimeout(connectionRequestTimeout)
 				.setConnectTimeout(connectTimeout)
 				.setSocketTimeout(socketTimeout)
-				.build(), DEFAULT_USER_AGENT);
-	}
-
-	private HttpClientUtils(RequestConfig requestConfig, String userAgent) {
+				.build();
+		defaultSocketConfig = SocketConfig.custom()
+				.setTcpNoDelay(this.isTcpNodelay())
+				.setSoTimeout(socketTimeout)
+				.setSoLinger(this.getSoLinger())
+				.setSoReuseAddress(this.isSoReuseaddr())
+				.setSoKeepAlive(this.isKeepAlive())
+				.build();
 		/**
 		 * 创建链接管理器
 		 */
@@ -204,7 +174,7 @@ public class HttpClientUtils {
 				.setRetryHandler(new HttpRequestRetryHandler())                 //设置请求重试Handler
 				.setKeepAliveStrategy(new HttpConnectionKeepAliveStrategy())    //设置keep-alive连接保持活动的策略
 				.setUserAgent(userAgent)
-				.setDefaultRequestConfig(requestConfig)
+				.setDefaultRequestConfig(defaultRequestConfig)
 				.setConnectionManager(poolingHttpClientConnectionManager)
 				.build();
 		/**
@@ -285,7 +255,7 @@ public class HttpClientUtils {
 		 * 设置超时，覆盖httpClient默认参数
 		 */
 		if (requestTimeout > 0) {
-			RequestConfig requestConfig = RequestConfig.copy(DEFAULT_REQUEST_CONFIG)
+			RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
 					.setSocketTimeout(requestTimeout)
 					.build();
 			httpGet.setConfig(requestConfig);
@@ -383,7 +353,7 @@ public class HttpClientUtils {
 		 * 设置超时，覆盖httpClient默认参数
 		 */
 		if (requestTimeout > 0) {
-			RequestConfig requestConfig = RequestConfig.copy(DEFAULT_REQUEST_CONFIG)
+			RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
 					.setSocketTimeout(requestTimeout)
 					.build();
 			httpPost.setConfig(requestConfig);
@@ -474,7 +444,7 @@ public class HttpClientUtils {
 		 * 设置超时，覆盖httpClient默认参数
 		 */
 		if (requestTimeout > 0) {
-			RequestConfig requestConfig = RequestConfig.copy(DEFAULT_REQUEST_CONFIG)
+			RequestConfig requestConfig = RequestConfig.copy(defaultRequestConfig)
 					.setSocketTimeout(requestTimeout)
 					.build();
 			httpPost.setConfig(requestConfig);
@@ -543,7 +513,7 @@ public class HttpClientUtils {
 
 	public void setTcpNodelay(boolean tcpNodelay) {
 		this.tcpNodelay = tcpNodelay;
-		SocketConfig socketConfig = SocketConfig.copy(this.defaultSocketConfig).setTcpNoDelay(tcpNodelay).build();
+		SocketConfig socketConfig = SocketConfig.copy(defaultSocketConfig).setTcpNoDelay(tcpNodelay).build();
 		this.poolingHttpClientConnectionManager.setDefaultSocketConfig(socketConfig);
 	}
 
@@ -553,7 +523,7 @@ public class HttpClientUtils {
 
 	public void setSoLinger(int soLinger) {
 		this.soLinger = soLinger;
-		SocketConfig socketConfig = SocketConfig.copy(this.defaultSocketConfig).setSoLinger(soLinger).build();
+		SocketConfig socketConfig = SocketConfig.copy(defaultSocketConfig).setSoLinger(soLinger).build();
 		this.poolingHttpClientConnectionManager.setDefaultSocketConfig(socketConfig);
 	}
 
@@ -563,7 +533,7 @@ public class HttpClientUtils {
 
 	public void setSoReuseaddr(boolean soReuseaddr) {
 		this.soReuseaddr = soReuseaddr;
-		SocketConfig socketConfig = SocketConfig.copy(this.defaultSocketConfig).setSoReuseAddress(soReuseaddr).build();
+		SocketConfig socketConfig = SocketConfig.copy(defaultSocketConfig).setSoReuseAddress(soReuseaddr).build();
 		this.poolingHttpClientConnectionManager.setDefaultSocketConfig(socketConfig);
 	}
 
@@ -573,7 +543,7 @@ public class HttpClientUtils {
 
 	public void setSocketBufferSize(int socketBufferSize) {
 		this.socketBufferSize = socketBufferSize;
-		ConnectionConfig connectionConfig = ConnectionConfig.copy(this.defaultConnectionConfig).setBufferSize(socketBufferSize).build();
+		ConnectionConfig connectionConfig = ConnectionConfig.copy(defaultConnectionConfig).setBufferSize(socketBufferSize).build();
 		this.poolingHttpClientConnectionManager.setDefaultConnectionConfig(connectionConfig);
 	}
 
