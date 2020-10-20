@@ -6,6 +6,6 @@
 <dependency>
     <groupId>com.zhouyutong</groupId>
     <artifactId>z-application</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
 </dependency>
 ```
