@@ -16,15 +16,15 @@ public class Resp<T> implements Serializable {
     public static final String CODE_SUCCESS = "0";
     public static final String MESSAGE_SUCCESS = "success";
 
-    @ApiModelProperty(value = "状态码,0成功非0失败")
+    @ApiModelProperty(value = "0成功非0失败")
     @Getter
     private String code;
 
-    @ApiModelProperty(value = "状态码描述,0success非0失败原因")
+    @ApiModelProperty(value = "0success非0失败原因")
     @Getter
     private String message;
 
-    @ApiModelProperty(value = "返回数据")
+    @ApiModelProperty(value = "数据")
     @Getter
     private T data;
 
