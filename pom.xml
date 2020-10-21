@@ -12,6 +12,14 @@
     <description>application framework.</description>
 
     <properties>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
+        <guava.version>19.0</guava.version>
+        <lombok.version>1.18.12</lombok.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
+        <commons-lang3.version>3.11</commons-lang3.version>
+        <fastjson.version>1.2.74</fastjson.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <swagger-annotations.version>1.6.2</swagger-annotations.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -24,45 +32,45 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
+            <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>1.9.4</version>
+            <version>${commons-beanutils.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.74</version>
+            <version>${fastjson.version}</version>
         </dependency>
         <!-- org.apache.httpcomponents-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <version>${httpclient.version}</version>
         </dependency>
         <!-- Swagger annotations -->
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.6.2</version>
+            <version>${swagger-annotations.version}</version>
         </dependency>
     </dependencies>
 
@@ -74,8 +82,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven_compiler_plugin_version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version</source>
+                    <target>${java.version</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -95,12 +103,12 @@
         <repository>
             <id>release</id>
             <name>Nexus Release Repository</name>
-            <url>http://#:8081/nexus/content/repositories/releases/</url>
+            <url>http://:8081/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>snapshot</id>
             <name>Nexus Snapshot Repository</name>
-            <url>http://#:8081/nexus/content/repositories/snapshots/</url>
+            <url>http://:8081/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
