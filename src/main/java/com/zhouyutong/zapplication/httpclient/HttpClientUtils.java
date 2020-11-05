@@ -487,6 +487,10 @@ public class HttpClientUtils {
 		return result;
 	}
 
+	public CloseableHttpClient getCloseableHttpClient() {
+		return closeableHttpClient;
+	}
+
 	/**
 	 *********************** 默认客户端级别参数,request级别可覆盖<br>
 	 * 注意：这些变量的set方法中会修改客户端级别参数且是线程安全的,不需要额外同步,因为DefaultHttpClient默认使用的是SyncBasicHttpParams
