@@ -17,6 +17,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
@@ -185,11 +186,7 @@ public class HttpClientUtils {
 
 	public void shutdown() {
 		idleThread.shutdown();
-		try {
-			closeableHttpClient.close();
-		} catch (IOException e) {
-			throw new RuntimeException("HttpClientUtils.shutdown error", e);
-		}
+		org.apache.http.client.utils.HttpClientUtils.closeQuietly(closeableHttpClient);
 	}
 
 	public String httpCallGet(String url) {
@@ -233,7 +230,6 @@ public class HttpClientUtils {
 		Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
 
 		String urlToSend = url;
-		String result;
 		/**
 		 * 创建查询参数,如果设置了queryParams
 		 */
@@ -268,17 +264,21 @@ public class HttpClientUtils {
 				httpGet.addHeader(header.getKey(), header.getValue());
 			}
 		}
+		return this.httpCallInternal("httpCallGet", httpGet, url, queryParams, headerMap, requestTimeout, encoding);
+	}
 
+	private String httpCallInternal(String callMethodName, HttpUriRequest httpUriRequest, String url, Object param, Map<String, String> headerMap, int requestTimeout, String encoding) {
+		String result;
 		long start = System.currentTimeMillis();
-		StringBuilder logSb = new StringBuilder("httpCallGet|");
+		StringBuilder logSb = new StringBuilder(callMethodName).append("|");
 		logSb.append("Url:").append(url).append("|");
 		logSb.append("Timeout:").append(requestTimeout).append("|");
 		logSb.append("Header:").append(print(headerMap)).append("|");
-		logSb.append("Param:").append(print(queryParams)).append("|");
+		logSb.append("Param:").append(print(param)).append("|");
 
 		CloseableHttpResponse closeableHttpResponse = null;
 		try {
-			closeableHttpResponse = closeableHttpClient.execute(httpGet);
+			closeableHttpResponse = closeableHttpClient.execute(httpUriRequest);
 			result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
 			logSb.append("Result:").append(result).append("|");
 		} catch (IOException ex) {
@@ -287,16 +287,11 @@ public class HttpClientUtils {
 		} finally {
 			long end = System.currentTimeMillis();
 			logSb.append("TimeCost:").append(end - start);
-			if(log.isDebugEnabled()){
+			if (log.isDebugEnabled()) {
 				log.debug(logSb.toString());
 			}
 
-			if (closeableHttpResponse != null) {
-				try {
-					closeableHttpResponse.close();
-				} catch (IOException e) {
-				}
-			}
+			org.apache.http.client.utils.HttpClientUtils.closeQuietly(closeableHttpResponse);
 		}
 		return result;
 	}
@@ -339,7 +334,6 @@ public class HttpClientUtils {
 		Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
 
 		String urlToSend = url;
-		String result;
 		HttpPost httpPost = new HttpPost(urlToSend);
 		List<NameValuePair> qparams = Lists.newArrayList();
 		for (Entry<String, String> entry : postParams.entrySet()) {
@@ -370,36 +364,7 @@ public class HttpClientUtils {
 			}
 		}
 
-		long start = System.currentTimeMillis();
-		StringBuilder logSb = new StringBuilder("httpCallPostForm|");
-		logSb.append("Url:").append(url).append("|");
-		logSb.append("Timeout:").append(requestTimeout).append("|");
-		logSb.append("Header:").append(print(headerMap)).append("|");
-		logSb.append("Param:").append(print(postParams)).append("|");
-
-		CloseableHttpResponse closeableHttpResponse = null;
-		try {
-			closeableHttpResponse = closeableHttpClient.execute(httpPost);
-			result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
-			logSb.append("Result:").append(result).append("|");
-		} catch (IOException ex) {
-			logSb.append("Error:").append(ex.getMessage()).append("|");
-			throw new HttpCallException(ex.getMessage(), ex);
-		} finally {
-			long end = System.currentTimeMillis();
-			logSb.append("TimeCost:").append(end - start);
-			if(log.isDebugEnabled()){
-				log.debug(logSb.toString());
-			}
-
-			if (closeableHttpResponse != null) {
-				try {
-					closeableHttpResponse.close();
-				} catch (IOException e) {
-				}
-			}
-		}
-		return result;
+		return this.httpCallInternal("httpCallPostForm", httpPost, url, postParams, headerMap, requestTimeout, encoding);
 	}
 
 	public String httpCallPostJson(String url, String jsonParams) {
@@ -440,7 +405,6 @@ public class HttpClientUtils {
 		Preconditions.checkArgument(!Strings.isNullOrEmpty(encoding), "Param encoding must be not null and empty");
 
 		String urlToSend = url;
-		String result;
 		HttpPost httpPost = new HttpPost(urlToSend);
 		StringEntity entity = new StringEntity(jsonParams, encoding);
 		// entity.setContentType("application/json;charset=" + encoding);
@@ -463,37 +427,7 @@ public class HttpClientUtils {
 				httpPost.addHeader(header.getKey(), header.getValue());
 			}
 		}
-
-		long start = System.currentTimeMillis();
-		StringBuilder logSb = new StringBuilder("httpCallPostJson|");
-		logSb.append("Url:").append(url).append("|");
-		logSb.append("Timeout:").append(requestTimeout).append("|");
-		logSb.append("Header:").append(print(headerMap)).append("|");
-		logSb.append("Param:").append(jsonParams).append("|");
-
-		CloseableHttpResponse closeableHttpResponse = null;
-		try {
-			closeableHttpResponse = closeableHttpClient.execute(httpPost);
-			result = EntityUtils.toString(closeableHttpResponse.getEntity(), encoding);
-			logSb.append("Result:").append(result).append("|");
-		} catch (IOException ex) {
-			logSb.append("Error:").append(ex.getMessage()).append("|");
-			throw new HttpCallException(ex.getMessage(), ex);
-		} finally {
-			long end = System.currentTimeMillis();
-			logSb.append("TimeCost:").append(end - start);
-			if(log.isDebugEnabled()){
-				log.debug(logSb.toString());
-			}
-
-			if (closeableHttpResponse != null) {
-				try {
-					closeableHttpResponse.close();
-				} catch (IOException e) {
-				}
-			}
-		}
-		return result;
+		return this.httpCallInternal("httpCallPostJson", httpPost, url, jsonParams, headerMap, requestTimeout, encoding);
 	}
 
 	public CloseableHttpClient getCloseableHttpClient() {
@@ -702,12 +636,11 @@ public class HttpClientUtils {
 		}
 	}
 
-	private static String print(Map<?, ?> map) {
-		if (map == null) {
+	private static String print(Object param) {
+		if (param == null) {
 			return "";
 		} else {
-			return map.toString();
+			return param.toString();
 		}
-
 	}
 }
