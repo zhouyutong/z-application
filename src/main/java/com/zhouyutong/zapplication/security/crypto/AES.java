@@ -10,7 +10,7 @@ import java.util.Base64;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * <b>对称加密DES算法工具</b><br>
+ * <b>对称加密AES算法工具</b><br>
  *
  * @author ziroom
  * @thread-safe
