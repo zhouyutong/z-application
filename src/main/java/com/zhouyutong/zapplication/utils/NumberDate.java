@@ -113,9 +113,14 @@ public class NumberDate {
 
 	public String format(String format) {
 		if (numberTimes <= 0) {
-			return "0";
+			return "";
 		}
-		return DateUtils.format(toDate(), format);
+		if (!org.apache.commons.lang3.StringUtils.equalsAny(format, SUPPORT_FORMAT_ARRAY)) {
+			throw new IllegalArgumentException("不支持的日期格式:" + format);
+		}
+
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(toDate());
 	}
 
 	/**
@@ -336,10 +341,6 @@ public class NumberDate {
 	}
 
 	public String toFormatString(String format) {
-		if (org.apache.commons.lang3.StringUtils.equalsAny(format, SUPPORT_FORMAT_ARRAY)) {
-			SimpleDateFormat sdf = new SimpleDateFormat(format);
-			return sdf.format(this.toDate());
-		}
-		throw new IllegalArgumentException("不支持的日期格式:" + format);
+		return this.format(format);
 	}
 }
