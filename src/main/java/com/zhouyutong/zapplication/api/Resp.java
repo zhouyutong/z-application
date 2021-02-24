@@ -91,6 +91,10 @@ public class Resp<T> implements Serializable {
 		return new Resp(code, message, null);
 	}
 
+	public static <T> Resp error(String code, String message, T data) {
+		return new Resp(code, message, data);
+	}
+
 	public static Resp error(String message) {
 		return new Resp(ErrorCode.OPER_FAIL.getCode(), message, null);
 	}
