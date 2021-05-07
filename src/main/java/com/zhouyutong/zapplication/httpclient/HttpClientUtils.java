@@ -190,11 +190,11 @@ public class HttpClientUtils {
 	}
 
 	public String httpCallGet(String url) {
-		return httpCallGet(url, null, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+		return httpCallGet(url, null, null, 0, DEFAULT_ENCODING);
 	}
 
 	public String httpCallGet(String url, Map<String, String> queryParams) {
-		return httpCallGet(url, queryParams, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+		return httpCallGet(url, queryParams, null, 0, DEFAULT_ENCODING);
 	}
 
 	public String httpCallGet(String url, Map<String, String> queryParams, int requestTimeout) {
@@ -202,7 +202,7 @@ public class HttpClientUtils {
 	}
 
 	public String httpCallGet(String url, Map<String, String> queryParams, Map<String, String> headerMap) {
-		return httpCallGet(url, queryParams, headerMap, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+		return httpCallGet(url, queryParams, headerMap, 0, DEFAULT_ENCODING);
 	}
 
 	public String httpCallGet(String url, Map<String, String> queryParams, Map<String, String> headerMap, int requestTimeout) {
@@ -297,7 +297,7 @@ public class HttpClientUtils {
 	}
 
 	public String httpCallPostForm(String url, Map<String, String> postParams) {
-		return httpCallPostForm(url, postParams, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+		return httpCallPostForm(url, postParams, null, 0, DEFAULT_ENCODING);
 	}
 
 	public String httpCallPostForm(String url, Map<String, String> postParams, int requestTimeout) {
@@ -309,7 +309,7 @@ public class HttpClientUtils {
 	}
 
 	public String httpCallPostForm(String url, Map<String, String> postParams, Map<String, String> headerMap) {
-		return httpCallPostForm(url, postParams, headerMap, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+		return httpCallPostForm(url, postParams, headerMap, 0, DEFAULT_ENCODING);
 	}
 
 	public String httpCallPostForm(String url, Map<String, String> postParams, Map<String, String> headerMap, int requestTimeout) {
@@ -368,7 +368,7 @@ public class HttpClientUtils {
 	}
 
 	public String httpCallPostJson(String url, String jsonParams) {
-		return httpCallPostJson(url, jsonParams, null, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+		return httpCallPostJson(url, jsonParams, null, 0, DEFAULT_ENCODING);
 	}
 
 	public String httpCallPostJson(String url, String jsonParams, int requestTimeout) {
@@ -380,7 +380,7 @@ public class HttpClientUtils {
 	}
 
 	public String httpCallPostJson(String url, String jsonParams, Map<String, String> headerMap) {
-		return httpCallPostJson(url, jsonParams, headerMap, DEFAULT_REQUEST_TIMEOUT, DEFAULT_ENCODING);
+		return httpCallPostJson(url, jsonParams, headerMap, 0, DEFAULT_ENCODING);
 	}
 
 	public String httpCallPostJson(String url, String jsonParams, Map<String, String> headerMap, int requestTimeout) {
