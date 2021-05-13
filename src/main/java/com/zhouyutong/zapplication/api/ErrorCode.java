@@ -21,19 +21,19 @@ public class ErrorCode implements Serializable {
     public static final ErrorCode INVALID_CALLER = new ErrorCode("4006", "无效的调用方");
     public static final ErrorCode UPLOAD_TYPE = new ErrorCode("4007", "您上传的文件类型不允许");
     public static final ErrorCode UPLOAD_SIZE = new ErrorCode("4008", "您上传的文件大小不能超过[%s]KB");
-    public static final ErrorCode SYSTEM_BUSY = new ErrorCode("4009", "服务器繁忙，请稍后重试");
+    public static final ErrorCode SYSTEM_BUSY = new ErrorCode("4009", "系统繁忙，请稍后重试");
     public static final ErrorCode NEED_LOGIN = new ErrorCode("4010", "登录超时,请重新登录");
     public static final ErrorCode OPER_FAIL = new ErrorCode("4011", "操作失败：%s");
     /**
      * 5000通用服务器异常,5001访问redis异常
      */
-    public static final ErrorCode SERVER = new ErrorCode("5000", "服务器内部错误：%s");
-    public static final ErrorCode SERVER_REDIS = new ErrorCode("5001", "服务器内部错误：%s");
-    public static final ErrorCode SERVER_MYSQL = new ErrorCode("5002", "服务器内部错误：%s");
-    public static final ErrorCode SERVER_ES = new ErrorCode("5003", "服务器内部错误：%s");
-    public static final ErrorCode SERVER_HTTP = new ErrorCode("5004", "服务器内部错误：%s");
-    public static final ErrorCode SERVER_CASSANDRA = new ErrorCode("5005", "服务器内部错误：%s");
-    public static final ErrorCode SERVER_ORACLE = new ErrorCode("5006", "服务器内部错误：%s");
+    public static final ErrorCode SERVER = new ErrorCode("5000", "系统内部错误：%s");
+    public static final ErrorCode SERVER_REDIS = new ErrorCode("5001", "系统内部错误：%s");
+    public static final ErrorCode SERVER_MYSQL = new ErrorCode("5002", "系统内部错误：%s");
+    public static final ErrorCode SERVER_ES = new ErrorCode("5003", "系统内部错误：%s");
+    public static final ErrorCode SERVER_HTTP = new ErrorCode("5004", "系统内部错误：%s");
+    public static final ErrorCode SERVER_CASSANDRA = new ErrorCode("5005", "系统内部错误：%s");
+    public static final ErrorCode SERVER_ORACLE = new ErrorCode("5006", "系统内部错误：%s");
 
     @Getter
     private String code;
