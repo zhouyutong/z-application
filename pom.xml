@@ -17,7 +17,7 @@
         <lombok.version>1.18.12</lombok.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-lang3.version>3.11</commons-lang3.version>
-        <fastjson.version>1.2.74</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <httpclient.version>4.5.13</httpclient.version>
         <swagger-annotations.version>1.6.2</swagger-annotations.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
